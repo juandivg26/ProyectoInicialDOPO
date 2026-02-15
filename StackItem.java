@@ -1,6 +1,6 @@
 /**
  * Un elemento de la torre. Puede ser una taza o una tapa.
- * @author Juan David
+ * @author Juan Diego Valderrama Gaviria y Jhonatan Madero
  * @version 1.0
  */
 public class StackItem {
