@@ -3,7 +3,7 @@ import javax.swing.JOptionPane;
 
 /**
  * Simulador de torre de tazas y tapas.
- * @author Juan David
+ * @author Juan Diego Valderrama Gaviria y Jhonatan Madero
  * @version 1.0
  */
 public class Tower {
