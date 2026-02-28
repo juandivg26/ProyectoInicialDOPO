@@ -10,10 +10,12 @@ public class StackItem {
     private String color;
     private int height;
     
+    // Partes visuales
     private Rectangle base;
     private Rectangle wallLeft;
     private Rectangle wallRight;
     
+    // Posiciones actuales en pixeles (necesarias para mover relativamente)
     private int baseX;
     private int baseY;
     private int leftX;
@@ -21,94 +23,150 @@ public class StackItem {
     private int rightX;
     private int rightY;
     
+    private boolean drawn;
+    
     private static final int SCALE = 15;
     private static final int WALL = 3;
+    private static final int DEFAULT_X = 70;
+    private static final int DEFAULT_Y = 15;
 
+    /**
+     * Crea un elemento para la torre.
+     * @param type "cup" o "lid"
+     * @param number numero del elemento
+     * @param color color del elemento
+     */
     public StackItem(String type, int number, String color) {
         this.type = type;
         this.number = number;
         this.color = color;
+        this.drawn = false;
+        
         if (type.equals("cup")) {
             this.height = 2 * number - 1;
         } else {
             this.height = 1;
         }
-        crearFormas();
+        
+        createShapes();
     }
     
-    private void crearFormas() {
-        int ancho = number * SCALE;
-        if (type.equals("cup")) {
-            int alto = height * SCALE;
-            
-            base = new Rectangle();
-            base.changeSize(1 * SCALE, ancho);
-            base.changeColor(color);
-            baseX = 70;
-            baseY = 15;
-            
-            wallLeft = new Rectangle();
-            wallLeft.changeSize(alto, WALL);
-            wallLeft.changeColor(color);
-            leftX = 70;
-            leftY = 15;
-            
-            wallRight = new Rectangle();
-            wallRight.changeSize(alto, WALL);
-            wallRight.changeColor(color);
-            rightX = 70;
-            rightY = 15;
-        } else {
-            base = new Rectangle();
-            base.changeSize(1 * SCALE, ancho);
-            base.changeColor(color);
-            baseX = 70;
-            baseY = 15;
-        }
-    }
-    
-    public String getType() { return type; }
-    public int getNumber() { return number; }
-    public int getHeight() { return height; }
-    public String getColor() { return color; }
-    
-    public void draw(int centroX, int bt, int posY) {
-        int ancho = number * SCALE;
-        int xIzq = centroX - ancho / 2;
+    private void createShapes() {
+        int widthPx = number * SCALE;
         
         if (type.equals("cup")) {
-            int alto = height * SCALE;
+            int heightPx = height * SCALE;
+            int basePx = 1 * SCALE;
             
-            int bx = xIzq;
-            int by = bt - posY * SCALE - 1 * SCALE;
-            mover(base, baseX, baseY, bx, by);
-            baseX = bx;
-            baseY = by;
-            base.makeVisible();
+            base = new Rectangle();
+            base.changeSize(basePx, widthPx);
+            base.changeColor(color);
+            baseX = DEFAULT_X;
+            baseY = DEFAULT_Y;
             
-            int lx = xIzq;
-            int ly = bt - posY * SCALE - alto;
-            mover(wallLeft, leftX, leftY, lx, ly);
-            leftX = lx;
-            leftY = ly;
-            wallLeft.makeVisible();
+            wallLeft = new Rectangle();
+            wallLeft.changeSize(heightPx, WALL);
+            wallLeft.changeColor(color);
+            leftX = DEFAULT_X;
+            leftY = DEFAULT_Y;
             
-            int rx = xIzq + ancho - WALL;
-            int ry = bt - posY * SCALE - alto;
-            mover(wallRight, rightX, rightY, rx, ry);
-            rightX = rx;
-            rightY = ry;
-            wallRight.makeVisible();
+            wallRight = new Rectangle();
+            wallRight.changeSize(heightPx, WALL);
+            wallRight.changeColor(color);
+            rightX = DEFAULT_X;
+            rightY = DEFAULT_Y;
+            
         } else {
-            int tx = xIzq;
-            int ty = bt - posY * SCALE - 1 * SCALE;
-            mover(base, baseX, baseY, tx, ty);
-            baseX = tx;
-            baseY = ty;
-            base.makeVisible();
+            base = new Rectangle();
+            base.changeSize(1 * SCALE, widthPx);
+            base.changeColor(color);
+            baseX = DEFAULT_X;
+            baseY = DEFAULT_Y;
         }
     }
     
+    /**
+     * Retorna el tipo: "cup" o "lid".
+     */
+    public String getType() {
+        return type;
+    }
+    
+    /**
+     * Retorna el numero del elemento.
+     */
+    public int getNumber() {
+        return number;
+    }
+    
+    /**
+     * Retorna la altura en cm.
+     */
+    public int getHeight() {
+        return height;
+    }
+    
+    /**
+     * Retorna el color.
+     */
+    public String getColor() {
+        return color;
+    }
+    
+    /**
+     * Dibuja el elemento en la posicion indicada.
+     * @param towerCenterX centro horizontal de la torre en pixeles
+     * @param towerBaseY posicion Y de la base de la torre en pixeles
+     * @param yPositionCm posicion Y del elemento en cm desde la base
+     */
+    public void draw(int towerCenterX, int towerBaseY, int yPositionCm) {
+        int widthPx = number * SCALE;
+        int xLeft = towerCenterX - widthPx / 2;
+        
+        if (type.equals("cup")) {
+            int heightPx = height * SCALE;
+            int basePx = 1 * SCALE;
+            
+            // Base: parte inferior de la taza
+            int targetBaseX = xLeft;
+            int targetBaseY = towerBaseY - yPositionCm * SCALE - basePx;
+            moveTo(base, baseX, baseY, targetBaseX, targetBaseY);
+            baseX = targetBaseX;
+            baseY = targetBaseY;
+            base.makeVisible();
+            
+            // Pared izquierda
+            int targetLeftX = xLeft;
+            int targetLeftY = towerBaseY - yPositionCm * SCALE - heightPx;
+            moveTo(wallLeft, leftX, leftY, targetLeftX, targetLeftY);
+            leftX = targetLeftX;
+            leftY = targetLeftY;
+            wallLeft.makeVisible();
+            
+            // Pared derecha
+            int targetRightX = xLeft + widthPx - WALL;
+            int targetRightY = towerBaseY - yPositionCm * SCALE - heightPx;
+            moveTo(wallRight, rightX, rightY, targetRightX, targetRightY);
+            rightX = targetRightX;
+            rightY = targetRightY;
+            wallRight.makeVisible();
+            
+        } else {
+            // Tapa: rectangulo solido
+            int targetX = xLeft;
+            int targetY = towerBaseY - yPositionCm * SCALE - 1 * SCALE;
+            moveTo(base, baseX, baseY, targetX, targetY);
+            baseX = targetX;
+            baseY = targetY;
+            base.makeVisible();
+        }
+        
+        drawn = true;
+    }
+    
+    /**
+     * Hace invisible el elemento.
+     */
     public void erase() {
         if (type.equals("cup")) {
             base.makeInvisible();
@@ -117,12 +175,21 @@ public class StackItem {
         } else {
             base.makeInvisible();
         }
+        drawn = false;
     }
     
-    private void mover(Rectangle rect, int ax, int ay, int dx, int dy) {
-        int moveX = dx - ax;
-        int moveY = dy - ay;
-        if (moveX != 0) rect.moveHorizontal(moveX);
-        if (moveY != 0) rect.moveVertical(moveY);
+    /**
+     * Mueve un Rectangle a una posicion absoluta usando movimientos relativos.
+     */
+    private void moveTo(Rectangle rect, int currentX, int currentY,
+                        int targetX, int targetY) {
+        int dx = targetX - currentX;
+        int dy = targetY - currentY;
+        if (dx != 0) {
+            rect.moveHorizontal(dx);
+        }
+        if (dy != 0) {
+            rect.moveVertical(dy);
+        }
     }
 }
