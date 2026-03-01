@@ -4,7 +4,7 @@ import javax.swing.JOptionPane;
 /**
  * Simulador de torre de tazas y tapas.
  * @author Juan Diego Valderrama Gaviria y Jhonatan Madero
- * @version 1.0
+ * @version 2.0
  */
 public class Tower {
     
@@ -13,28 +13,23 @@ public class Tower {
     private boolean visible;
     private boolean lastOk;
     
-    // Elementos apilados (indice 0 = base, ultimo = cima)
     private ArrayList<StackItem> items;
     
-    // Marco visual de la torre
     private Rectangle towerBase;
     private Rectangle towerLeft;
     private Rectangle towerRight;
     private ArrayList<Rectangle> heightMarks;
     
-    // Posiciones actuales del marco (para mover relativamente)
     private int tBaseX, tBaseY;
     private int tLeftX, tLeftY;
     private int tRightX, tRightY;
     private ArrayList<Integer> markX;
     private ArrayList<Integer> markY;
     
-    // Colores validos del Canvas
     private static final String[] COLORS = {
         "red", "blue", "green", "yellow", "magenta", "black"
     };
     
-    // Constantes de dibujo
     private static final int SCALE = 15;
     private static final int FRAME = 2;
     private static final int CENTER_X = 150;
@@ -64,7 +59,42 @@ public class Tower {
         createFrame();
     }
     
-    // ==================== TAZAS ====================
+    /**
+     * Crea una torre con las tazas de 1 a cups.
+     * El ancho es cups y el alto es la suma de las alturas.
+     * @param cups numero de tazas a crear
+     */
+    public Tower(int cups) {
+        this.visible = false;
+        this.items = new ArrayList<StackItem>();
+        
+        if (cups <= 0) {
+            this.width = 1;
+            this.maxHeight = 1;
+            this.lastOk = false;
+            createFrame();
+            return;
+        }
+        
+        this.width = cups;
+        
+        int totalHeight = 0;
+        for (int i = 1; i <= cups; i++) {
+            totalHeight += (2 * i - 1);
+        }
+        this.maxHeight = totalHeight;
+        
+        createFrame();
+        
+        for (int i = 1; i <= cups; i++) {
+            StackItem cup = new StackItem("cup", i, getColor(i));
+            items.add(cup);
+        }
+        
+        this.lastOk = true;
+    }
+    
+    // TAZAS 
     
     /**
      * Anade la taza i a la cima de la torre.
@@ -132,7 +162,7 @@ public class Tower {
         redraw();
     }
     
-    // ==================== TAPAS ====================
+    // TAPAS
     
     /**
      * Anade la tapa i a la cima de la torre.
@@ -199,15 +229,13 @@ public class Tower {
         redraw();
     }
     
-    // ==================== ORGANIZAR ====================
+    //ORGANIZAR
     
     /**
      * Ordena de mayor a menor. El menor queda en la cima.
      * Si taza y tapa del mismo numero estan, la tapa va sobre la taza.
-     * Solo incluye los que quepan.
      */
     public void orderTower() {
-        // Guardar los items actuales
         ArrayList<String> oldTypes = new ArrayList<String>();
         ArrayList<Integer> oldNumbers = new ArrayList<Integer>();
         for (int i = 0; i < items.size(); i++) {
@@ -215,7 +243,6 @@ public class Tower {
             oldNumbers.add(items.get(i).getNumber());
         }
         
-        // Recopilar numeros unicos
         ArrayList<Integer> numbers = new ArrayList<Integer>();
         for (int i = 0; i < oldNumbers.size(); i++) {
             int num = oldNumbers.get(i);
@@ -225,11 +252,9 @@ public class Tower {
         }
         sortDescending(numbers);
         
-        // Borrar todo
         eraseAllItems();
         items.clear();
         
-        // Reconstruir en orden mayor a menor
         int currentHeight = 0;
         
         for (int i = 0; i < numbers.size(); i++) {
@@ -260,10 +285,9 @@ public class Tower {
     }
     
     /**
-     * Invierte el orden de los elementos. Solo incluye los que quepan.
+     * Invierte el orden de los elementos.
      */
     public void reverseTower() {
-        // Guardar en orden inverso
         ArrayList<String> revTypes = new ArrayList<String>();
         ArrayList<Integer> revNumbers = new ArrayList<Integer>();
         
@@ -272,11 +296,9 @@ public class Tower {
             revNumbers.add(items.get(i).getNumber());
         }
         
-        // Borrar todo
         eraseAllItems();
         items.clear();
         
-        // Reconstruir solo con los que quepan
         int currentHeight = 0;
         for (int i = 0; i < revTypes.size(); i++) {
             String type = revTypes.get(i);
@@ -298,7 +320,108 @@ public class Tower {
         redraw();
     }
     
-    // ==================== CONSULTAS ====================
+    /**
+     * Intercambia la posicion de dos objetos en la torre.
+     * @param o1 primer objeto {tipo, numero}
+     * @param o2 segundo objeto {tipo, numero}
+     */
+    public void swap(String[] o1, String[] o2) {
+        if (o1 == null || o2 == null || o1.length != 2 || o2.length != 2) {
+            lastOk = false;
+            showError("Los objetos deben tener tipo y numero.");
+            return;
+        }
+        
+        String type1 = o1[0];
+        String type2 = o2[0];
+        int num1;
+        int num2;
+        
+        try {
+            num1 = Integer.parseInt(o1[1]);
+            num2 = Integer.parseInt(o2[1]);
+        } catch (Exception e) {
+            lastOk = false;
+            showError("Los numeros no son validos.");
+            return;
+        }
+        
+        int idx1 = findItem(type1, num1);
+        int idx2 = findItem(type2, num2);
+        
+        if (idx1 == -1) {
+            lastOk = false;
+            showError("No se encontro " + type1 + " " + num1 + ".");
+            return;
+        }
+        if (idx2 == -1) {
+            lastOk = false;
+            showError("No se encontro " + type2 + " " + num2 + ".");
+            return;
+        }
+        if (idx1 == idx2) {
+            lastOk = false;
+            showError("No se puede intercambiar un objeto consigo mismo.");
+            return;
+        }
+        
+        StackItem temp = items.get(idx1);
+        items.set(idx1, items.get(idx2));
+        items.set(idx2, temp);
+        
+        lastOk = true;
+        redraw();
+    }
+    
+    /**
+     * Tapa las tazas que tienen sus tapas en la torre.
+     * Mueve cada tapa justo encima de su taza correspondiente.
+     */
+    public void cover() {
+        ArrayList<Integer> cupsToCover = new ArrayList<Integer>();
+        
+        for (int i = 0; i < items.size(); i++) {
+            StackItem si = items.get(i);
+            if (si.getType().equals("cup")) {
+                if (existsItem("lid", si.getNumber())) {
+                    boolean alreadyCovered = false;
+                    if (i + 1 < items.size()) {
+                        StackItem next = items.get(i + 1);
+                        if (next.getType().equals("lid") 
+                            && next.getNumber() == si.getNumber()) {
+                            alreadyCovered = true;
+                        }
+                    }
+                    if (!alreadyCovered) {
+                        cupsToCover.add(si.getNumber());
+                    }
+                }
+            }
+        }
+        
+        for (int c = 0; c < cupsToCover.size(); c++) {
+            int cupNum = cupsToCover.get(c);
+            
+            int lidIdx = findItem("lid", cupNum);
+            if (lidIdx == -1) continue;
+            
+            StackItem lid = items.get(lidIdx);
+            items.remove(lidIdx);
+            
+            int cupIdx = findItem("cup", cupNum);
+            if (cupIdx == -1) {
+                items.add(lid);
+                continue;
+            }
+            
+            items.add(cupIdx + 1, lid);
+        }
+        
+        lastOk = true;
+        redraw();
+    }
+    
+    //CONSULTAS
     
     /**
      * Retorna la altura total de la torre en cm.
@@ -309,8 +432,7 @@ public class Tower {
     }
     
     /**
-     * Retorna los numeros de las tazas tapadas por su tapa
-     * (tapa inmediatamente encima de su taza), ordenados de menor a mayor.
+     * Retorna los numeros de las tazas tapadas.
      */
     public int[] lidedCups() {
         ArrayList<Integer> result = new ArrayList<Integer>();
@@ -337,7 +459,6 @@ public class Tower {
     
     /**
      * Retorna informacion de los elementos de base a cima.
-     * Ejemplo: {{"cup","4"},{"lid","4"}}
      */
     public String[][] stackingItems() {
         String[][] result = new String[items.size()][2];
@@ -349,28 +470,51 @@ public class Tower {
         return result;
     }
     
-    // ==================== VISIBILIDAD ====================
-    
     /**
-     * Hace visible el simulador.
-     * Si la imagen no cabe en la pantalla, no se hace visible.
+     * Retorna un intercambio que reduzca la altura.
+     * @return los dos objetos a intercambiar, o array vacio si no hay
      */
-    public void makeVisible() {
-        int totalPx = computeHeight() * SCALE + 20;
-        int widthPx = width * SCALE;
-        if (totalPx > BASE_Y || widthPx > 280) {
-            lastOk = false;
-            showError("La torre no cabe en la pantalla.");
-            return;
+    public String[][] swapToReduce() {
+        int currentH = computeHeight();
+        
+        for (int i = 0; i < items.size(); i++) {
+            for (int j = i + 1; j < items.size(); j++) {
+                // Simular intercambio
+                StackItem temp = items.get(i);
+                items.set(i, items.get(j));
+                items.set(j, temp);
+                
+                int newH = computeHeight();
+                
+                // Deshacer intercambio
+                temp = items.get(i);
+                items.set(i, items.get(j));
+                items.set(j, temp);
+                
+                if (newH < currentH) {
+                    String[][] result = new String[2][2];
+                    result[0][0] = items.get(i).getType();
+                    result[0][1] = "" + items.get(i).getNumber();
+                    result[1][0] = items.get(j).getType();
+                    result[1][1] = "" + items.get(j).getNumber();
+                    lastOk = true;
+                    return result;
+                }
+            }
         }
+        
+        lastOk = true;
+        return new String[0][0];
+    }
+    
+    //VISIBILIDAD
+    
+    public void makeVisible() {
         visible = true;
         lastOk = true;
         redraw();
     }
     
-    /**
-     * Hace invisible el simulador.
-     */
     public void makeInvisible() {
         visible = false;
         eraseAllItems();
@@ -378,9 +522,6 @@ public class Tower {
         lastOk = true;
     }
     
-    /**
-     * Termina el simulador.
-     */
     public void exit() {
         makeInvisible();
         items.clear();
@@ -388,14 +529,11 @@ public class Tower {
         System.exit(0);
     }
     
-    /**
-     * Indica si la ultima operacion fue exitosa.
-     */
     public boolean ok() {
         return lastOk;
     }
     
-    // ==================== METODOS PRIVADOS ====================
+    //METODOS PRIVADOS
     
     private int computeHeight() {
         int h = 0;
@@ -476,6 +614,23 @@ public class Tower {
         }
     }
     
+    private void updateCoveredStatus() {
+        for (int i = 0; i < items.size(); i++) {
+            StackItem si = items.get(i);
+            if (si.getType().equals("cup")) {
+                boolean isCovered = false;
+                if (i + 1 < items.size()) {
+                    StackItem next = items.get(i + 1);
+                    if (next.getType().equals("lid") 
+                        && next.getNumber() == si.getNumber()) {
+                        isCovered = true;
+                    }
+                }
+                si.setCovered(isCovered);
+            }
+        }
+    }
+    
     // ---- Marco visual de la torre ----
     
     private void createFrame() {
@@ -527,7 +682,6 @@ public class Tower {
         int heightPx = maxHeight * SCALE;
         int leftX = CENTER_X - widthPx / 2;
         
-        // Base horizontal
         int bx = leftX - FRAME;
         int by = BASE_Y;
         moveRect(towerBase, tBaseX, tBaseY, bx, by);
@@ -535,21 +689,18 @@ public class Tower {
         tBaseY = by;
         towerBase.makeVisible();
         
-        // Pared izquierda
         int ly = BASE_Y - heightPx;
         moveRect(towerLeft, tLeftX, tLeftY, leftX - FRAME, ly);
         tLeftX = leftX - FRAME;
         tLeftY = ly;
         towerLeft.makeVisible();
         
-        // Pared derecha
         int rx = leftX + widthPx;
         moveRect(towerRight, tRightX, tRightY, rx, ly);
         tRightX = rx;
         tRightY = ly;
         towerRight.makeVisible();
         
-        // Marcas de cm
         for (int i = 0; i < maxHeight; i++) {
             Rectangle m = heightMarks.get(i);
             int mx = leftX;
@@ -576,6 +727,8 @@ public class Tower {
         eraseAllItems();
         eraseFrame();
         drawFrame();
+        
+        updateCoveredStatus();
         
         int currentY = 0;
         for (int i = 0; i < items.size(); i++) {
