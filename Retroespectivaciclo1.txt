@@ -1,0 +1,77 @@
+Retroespectiva CICLO 1
+1. ¿Cuáles fueron los mini-ciclos definidos? Justifíquenlos.
+Definimos 3 mini-ciclos:
+
+Mini-ciclo 1: Estructura base
+        Crear la clase StackItem con sus atributos (type, number, color, height)
+        Crear la clase Tower con el constructor y el ArrayList de items
+        Justificación: Sin estas clases no se puede hacer nada. Es la base de todo el proyecto.
+
+Mini-ciclo 2: Funcionalidad de tazas y tapas
+        Implementar pushCup, popCup, removeCup
+        Implementar pushLid, popLid, removeLid
+        Implementar las validaciones (que no se repitan, que quepan, etc.)
+        Implementar height() y ok()
+        Justificación: Son los requisitos funcionales principales. Sin poder agregar y quitar elementos el simulador no tiene sentido.
+
+Mini-ciclo 3: Representación visual
+        Implementar el dibujo de las tazas como forma de "U" usando Rectangles
+        Implementar el dibujo de las tapas como rectángulos sólidos
+        Implementar makeVisible, makeInvisible y redraw
+        Dibujar la línea base de la torre
+        Justificación: Los requisitos de usabilidad exigen representación visual. Lo dejamos de último porque el simulador debe funcionar primero en modo invisible.
+
+2. ¿Cuál es el estado actual del proyecto en términos de mini-ciclos? ¿Por qué?
+
+    Completamos los 3 mini-ciclos planificados. El simulador actualmente permite:
+
+        Crear una torre con ancho y alto máximo
+        Agregar y eliminar tazas y tapas (push, pop, remove)
+        Consultar la altura de la torre
+        Hacer visible e invisible el simulador
+        Muestra mensajes de error con JOptionPane cuando la operación no se puede realizar y el simulador está visible
+
+    Queda pendiente para el siguiente ciclo los requisitos de ordenar la torre, invertirla, consultar tazas tapadas y stackingItems, que no estaban en el alcance de esta entrega.
+
+3. ¿Cuál fue el tiempo total invertido por cada uno de ustedes?
+
+Juan Diego Valderrama Gaviria (12 horas)
+Jhonatan Madero (12 horas)
+
+4. ¿Cuál consideran fue el mayor logro? ¿Por qué?
+
+    El mayor logro fue lograr que la representación visual funcionara correctamente usando solo los métodos de shapes. El paquete shapes no tiene un método moveTo para posicionar un Rectangle en una coordenada absoluta, solo tiene moveHorizontal y moveVertical que son relativos. Tuvimos que diseñar una estrategia donde guardamos la posición actual de cada Rectangle y calculamos el desplazamiento necesario para moverlo a donde queremos.
+
+5. ¿Cuál consideran que fue el mayor problema técnico? ¿Qué hicieron para resolverlo?
+
+    El mayor problema técnico fue el posicionamiento de los elementos visuales. Como los Rectangles de shapes se crean con una posición fija (x=70, y=15) y solo se pueden mover con distancias relativas, al principio los elementos aparecían en posiciones incorrectas o se superponían.
+
+    Para resolverlo creamos un método privado mover que recibe la posición actual y la posición destino, calcula la diferencia y usa moveHorizontal y moveVertical con esa diferencia. Además guardamos siempre las coordenadas actuales de cada Rectangle en variables como baseX, baseY.
+
+6. ¿Qué hicieron bien como equipo? ¿Qué se comprometen a hacer para mejorar?
+
+    Lo que hicimos bien:
+
+        Planificar los mini-ciclos antes de empezar a codificar. Esto nos ayudó a no intentar hacer todo al tiempo y a tener avances concretos.
+       
+    Nos comprometemos a mejorar en:
+        Documentar mejor el código con comentarios más claros.
+
+7. Considerando las prácticas XP, ¿cuál fue la más útil? ¿Por qué?
+
+La mas uitil fue Designing con tarjetas CRC. Esta nos ayudó a decidir que solo necesitábamos 2 clases:
+Clase		
+Tower	
+Responsabilidades
+Crear torre, agregar/quitar elementos, validar, dibujar, visibilidad
+Clase
+StackItem
+Responsabilidades
+Guardar datos del elemento, dibujarse, borrarse	
+
+8. ¿Qué referencias usaron? ¿Cuál fue la más útil?
+
+        Barker, J. (2005). Beginning Java Objects: From Concepts to Code (2nd ed.). Apress. — La más útil. Usamos especialmente los capítulos 3 (Objects and Classes) y 4 (Object Interaction) para diseñar la relación entre Tower y StackItem como composición.
+
+        Documentación oficial de Java: ArrayList (Oracle, 2024). https://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html — Para consultar los métodos de ArrayList como add, remove, get, size.
+
