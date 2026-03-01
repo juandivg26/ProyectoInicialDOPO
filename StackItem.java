@@ -1,7 +1,7 @@
 /**
  * Un elemento de la torre. Puede ser una taza o una tapa.
  * @author Juan Diego Valderrama Gaviria y Jhonatan Madero
- * @version 1.0
+ * @version 2.0
  */
 public class StackItem {
     
@@ -9,13 +9,12 @@ public class StackItem {
     private int number;
     private String color;
     private int height;
+    private boolean covered;
     
-    // Partes visuales
     private Rectangle base;
     private Rectangle wallLeft;
     private Rectangle wallRight;
     
-    // Posiciones actuales en pixeles (necesarias para mover relativamente)
     private int baseX;
     private int baseY;
     private int leftX;
@@ -41,6 +40,7 @@ public class StackItem {
         this.number = number;
         this.color = color;
         this.drawn = false;
+        this.covered = false;
         
         if (type.equals("cup")) {
             this.height = 2 * number - 1;
@@ -85,32 +85,45 @@ public class StackItem {
         }
     }
     
-    /**
-     * Retorna el tipo: "cup" o "lid".
-     */
     public String getType() {
         return type;
     }
     
-    /**
-     * Retorna el numero del elemento.
-     */
     public int getNumber() {
         return number;
     }
     
-    /**
-     * Retorna la altura en cm.
-     */
     public int getHeight() {
         return height;
     }
     
-    /**
-     * Retorna el color.
-     */
     public String getColor() {
         return color;
+    }
+    
+    /**
+     * Indica si la taza esta tapada.
+     */
+    public boolean isCovered() {
+        return covered;
+    }
+    
+    /**
+     * Marca la taza como tapada o destapada.
+     * Cambia la apariencia visual: las paredes se ponen blancas.
+     * @param isCovered true si esta tapada
+     */
+    public void setCovered(boolean isCovered) {
+        if (!type.equals("cup")) return;
+        this.covered = isCovered;
+        
+        if (isCovered) {
+            wallLeft.changeColor("white");
+            wallRight.changeColor("white");
+        } else {
+            wallLeft.changeColor(color);
+            wallRight.changeColor(color);
+        }
     }
     
     /**
@@ -127,7 +140,6 @@ public class StackItem {
             int heightPx = height * SCALE;
             int basePx = 1 * SCALE;
             
-            // Base: parte inferior de la taza
             int targetBaseX = xLeft;
             int targetBaseY = towerBaseY - yPositionCm * SCALE - basePx;
             moveTo(base, baseX, baseY, targetBaseX, targetBaseY);
@@ -135,7 +147,6 @@ public class StackItem {
             baseY = targetBaseY;
             base.makeVisible();
             
-            // Pared izquierda
             int targetLeftX = xLeft;
             int targetLeftY = towerBaseY - yPositionCm * SCALE - heightPx;
             moveTo(wallLeft, leftX, leftY, targetLeftX, targetLeftY);
@@ -143,7 +154,6 @@ public class StackItem {
             leftY = targetLeftY;
             wallLeft.makeVisible();
             
-            // Pared derecha
             int targetRightX = xLeft + widthPx - WALL;
             int targetRightY = towerBaseY - yPositionCm * SCALE - heightPx;
             moveTo(wallRight, rightX, rightY, targetRightX, targetRightY);
@@ -152,7 +162,6 @@ public class StackItem {
             wallRight.makeVisible();
             
         } else {
-            // Tapa: rectangulo solido
             int targetX = xLeft;
             int targetY = towerBaseY - yPositionCm * SCALE - 1 * SCALE;
             moveTo(base, baseX, baseY, targetX, targetY);
@@ -178,9 +187,6 @@ public class StackItem {
         drawn = false;
     }
     
-    /**
-     * Mueve un Rectangle a una posicion absoluta usando movimientos relativos.
-     */
     private void moveTo(Rectangle rect, int currentX, int currentY,
                         int targetX, int targetY) {
         int dx = targetX - currentX;
