@@ -1,0 +1,41 @@
+Retroespectiva ciclo 2
+1. ¿Cuáles fueron los mini-ciclos definidos? Justifíquenlos.
+
+Definimos 4 mini-ciclos, uno por cada requisito funcional:
+
+Tower(cups) — Nuevo constructor	Es la base: crea la torre con tazas automáticamente. No depende de ningún otro método nuevo. Es el más sencillo y permite probar rápidamente el estado inicial del simulador.
+swap(o1, o2) — Intercambiar objetos: Requiere que la torre ya tenga elementos. Es independiente de cover y swapToReduce.
+over() — Tapar tazas + apariencia visual: Depende de que existan tazas y tapas en la torre. Incluye la parte de usabilidad.
+swapToReduce() — Consultar intercambio: Es el último porque es solo una consulta que no modifica la torre. Necesita que swap ya funcione para validar que el intercambio sugerido realmente reduce la altura.
+
+2. ¿Cuál es el estado actual del proyecto en términos de mini-ciclos? ¿Por qué?
+
+Los 4 mini-ciclos están completados al 100%.
+Mini-ciclo	
+Tower(cups):Completo-Constructor implementado, 6 tests pasan
+swap(o1, o2):Completo-Método implementado con todas las validaciones, 6 tests pasan
+cover() + visual:Completo-cover(), setCovered(), updateCoveredStatus() implementados, 4 tests pasan
+MswapToReduce()	Completo Método implementado, 4 tests pasan
+
+Ademas:
+Las clases TowerC2Test (17 tests) y TowerCC2Test (8 tests) se ejecutan exitosamente en modo invisible.
+Se cumple el requisito de usabilidad: las tazas tapadas se ven con paredes blancas, diferenciándose de las destapadas.
+
+
+3.¿Cuál fue el tiempo total invertido por cada uno de ustedes? (Horas/Hombre)
+El tiempo invertido fue de 8 horas para cada uno 
+
+4. ¿Cuál consideran fue el mayor logro? ¿Por qué?
+Nuetro mayor logro fue completar y lograr el objetivo de simular el problema de la maratón 
+
+5. ¿Cuál consideran que fue el mayor problema técnico? ¿Qué hicieron para resolverlo?
+Nuestro problema técnico fue la parte que no entendimos si en las pruebas cuando debe o no debe no sabíamos si cuando no debe debía pasar o fallar.
+
+6. ¿Qué hicieron bien como equipo? ¿Qué se comprometen a hacer para mejorar los resultados?
+Lo que hicimos bien en equipo fue repartirnos el trabajo y encontrarnos para hacer el proyecto en huecos de la u
+
+7. Considerando las prácticas XP incluidas en los laboratorios. ¿cuál fue la más útil? ¿por qué?
+La práctica que consideramo mas util fue pair programing ya que haciendo los codigos y los test mietras uno programaba el otro sepercataba de lo errores y iba proponiendo mas ideas para el codigo 
+
+8. ¿Qué referencias usaron? ¿Cuál fue la más útil? Incluyan citas con estándares adecuados.
+Las referencias que usamos fueron la API de java para consultar funciones y librerías, tambien utilizamos una ia para completar algunas documentaciones de ciertos métodos.
