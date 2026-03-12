@@ -1,193 +1,120 @@
 /**
- * Un elemento de la torre. Puede ser una taza o una tapa.
+ * Un elemento de la torre. Puede ser una taza (Cup) o una tapa (Lid).
+ * Clase abstracta que define el comportamiento comun de todos los elementos.
+ * 
+ * Cup y Lid heredan de esta clase e implementan su propio dibujo.
+ * 
  * @author Juan Diego Valderrama Gaviria y Jhonatan Madero
- * @version 2.0
+ * @version 3.0
  */
-public class StackItem {
+public abstract class StackItem {
     
-    private String type;
-    private int number;
-    private String color;
-    private int height;
-    private boolean covered;
+    protected int number;
+    protected String color;
+    protected int height;
+    protected boolean covered;
     
-    private Rectangle base;
-    private Rectangle wallLeft;
-    private Rectangle wallRight;
+    protected Rectangle base;
     
-    private int baseX;
-    private int baseY;
-    private int leftX;
-    private int leftY;
-    private int rightX;
-    private int rightY;
+    protected int baseX;
+    protected int baseY;
     
-    private boolean drawn;
+    protected boolean drawn;
     
-    private static final int SCALE = 15;
-    private static final int WALL = 3;
-    private static final int DEFAULT_X = 70;
-    private static final int DEFAULT_Y = 15;
+    protected static final int SCALE = 15;
+    protected static final int DEFAULT_X = 70;
+    protected static final int DEFAULT_Y = 15;
 
     /**
      * Crea un elemento para la torre.
-     * @param type "cup" o "lid"
      * @param number numero del elemento
      * @param color color del elemento
+     * @param height altura en cm del elemento
      */
-    public StackItem(String type, int number, String color) {
-        this.type = type;
+    public StackItem(int number, String color, int height) {
         this.number = number;
         this.color = color;
+        this.height = height;
         this.drawn = false;
         this.covered = false;
-        
-        if (type.equals("cup")) {
-            this.height = 2 * number - 1;
-        } else {
-            this.height = 1;
-        }
-        
-        createShapes();
     }
     
-    private void createShapes() {
-        int widthPx = number * SCALE;
-        
-        if (type.equals("cup")) {
-            int heightPx = height * SCALE;
-            int basePx = 1 * SCALE;
-            
-            base = new Rectangle();
-            base.changeSize(basePx, widthPx);
-            base.changeColor(color);
-            baseX = DEFAULT_X;
-            baseY = DEFAULT_Y;
-            
-            wallLeft = new Rectangle();
-            wallLeft.changeSize(heightPx, WALL);
-            wallLeft.changeColor(color);
-            leftX = DEFAULT_X;
-            leftY = DEFAULT_Y;
-            
-            wallRight = new Rectangle();
-            wallRight.changeSize(heightPx, WALL);
-            wallRight.changeColor(color);
-            rightX = DEFAULT_X;
-            rightY = DEFAULT_Y;
-            
-        } else {
-            base = new Rectangle();
-            base.changeSize(1 * SCALE, widthPx);
-            base.changeColor(color);
-            baseX = DEFAULT_X;
-            baseY = DEFAULT_Y;
-        }
-    }
+    /**
+     * Retorna el tipo del elemento.
+     * Cada subclase retorna su tipo: "cup" o "lid".
+     * @return tipo del elemento
+     */
+    public abstract String getType();
     
-    public String getType() {
-        return type;
-    }
+    /**
+     * Dibuja el elemento en la posicion indicada.
+     * Cada subclase implementa su propio dibujo.
+     * @param towerCenterX centro horizontal de la torre en pixeles
+     * @param towerBaseY posicion Y de la base de la torre en pixeles
+     * @param yPositionCm posicion Y del elemento en cm desde la base
+     */
+    public abstract void draw(int towerCenterX, int towerBaseY, int yPositionCm);
     
+    /**
+     * Hace invisible el elemento.
+     * Cada subclase oculta sus propios rectangulos.
+     */
+    public abstract void erase();
+    
+    /**
+     * Retorna el numero del elemento.
+     * @return numero del elemento
+     */
     public int getNumber() {
         return number;
     }
     
+    /**
+     * Retorna la altura del elemento en cm.
+     * @return altura en cm
+     */
     public int getHeight() {
         return height;
     }
     
+    /**
+     * Retorna el color del elemento.
+     * @return color del elemento
+     */
     public String getColor() {
         return color;
     }
     
     /**
-     * Indica si la taza esta tapada.
+     * Indica si el elemento esta tapado.
+     * @return true si esta tapado
      */
     public boolean isCovered() {
         return covered;
     }
     
     /**
-     * Marca la taza como tapada o destapada.
-     * Cambia la apariencia visual: las paredes se ponen blancas.
-     * @param isCovered true si esta tapada
+     * Marca el elemento como tapado o destapado.
+     * Por defecto no hace nada. Cup lo sobreescribe
+     * para cambiar el color de las paredes.
+     * @param isCovered true si esta tapado
      */
     public void setCovered(boolean isCovered) {
-        if (!type.equals("cup")) return;
-        this.covered = isCovered;
-        
-        if (isCovered) {
-            wallLeft.changeColor("white");
-            wallRight.changeColor("white");
-        } else {
-            wallLeft.changeColor(color);
-            wallRight.changeColor(color);
-        }
+        // Por defecto no hace nada.
+        // Solo Cup sobreescribe este metodo.
     }
     
     /**
-     * Dibuja el elemento en la posicion indicada.
-     * @param towerCenterX centro horizontal de la torre en pixeles
-     * @param towerBaseY posicion Y de la base de la torre en pixeles
-     * @param yPositionCm posicion Y del elemento en cm desde la base
+     * Mueve un rectangulo desde su posicion actual a una nueva.
+     * Calcula la diferencia entre posicion actual y destino
+     * y mueve el rectangulo esa distancia.
+     * @param rect el rectangulo a mover
+     * @param currentX posicion X actual
+     * @param currentY posicion Y actual
+     * @param targetX posicion X destino
+     * @param targetY posicion Y destino
      */
-    public void draw(int towerCenterX, int towerBaseY, int yPositionCm) {
-        int widthPx = number * SCALE;
-        int xLeft = towerCenterX - widthPx / 2;
-        
-        if (type.equals("cup")) {
-            int heightPx = height * SCALE;
-            int basePx = 1 * SCALE;
-            
-            int targetBaseX = xLeft;
-            int targetBaseY = towerBaseY - yPositionCm * SCALE - basePx;
-            moveTo(base, baseX, baseY, targetBaseX, targetBaseY);
-            baseX = targetBaseX;
-            baseY = targetBaseY;
-            base.makeVisible();
-            
-            int targetLeftX = xLeft;
-            int targetLeftY = towerBaseY - yPositionCm * SCALE - heightPx;
-            moveTo(wallLeft, leftX, leftY, targetLeftX, targetLeftY);
-            leftX = targetLeftX;
-            leftY = targetLeftY;
-            wallLeft.makeVisible();
-            
-            int targetRightX = xLeft + widthPx - WALL;
-            int targetRightY = towerBaseY - yPositionCm * SCALE - heightPx;
-            moveTo(wallRight, rightX, rightY, targetRightX, targetRightY);
-            rightX = targetRightX;
-            rightY = targetRightY;
-            wallRight.makeVisible();
-            
-        } else {
-            int targetX = xLeft;
-            int targetY = towerBaseY - yPositionCm * SCALE - 1 * SCALE;
-            moveTo(base, baseX, baseY, targetX, targetY);
-            baseX = targetX;
-            baseY = targetY;
-            base.makeVisible();
-        }
-        
-        drawn = true;
-    }
-    
-    /**
-     * Hace invisible el elemento.
-     */
-    public void erase() {
-        if (type.equals("cup")) {
-            base.makeInvisible();
-            wallLeft.makeInvisible();
-            wallRight.makeInvisible();
-        } else {
-            base.makeInvisible();
-        }
-        drawn = false;
-    }
-    
-    private void moveTo(Rectangle rect, int currentX, int currentY,
+    protected void moveTo(Rectangle rect, int currentX, int currentY,
                         int targetX, int targetY) {
         int dx = targetX - currentX;
         int dy = targetY - currentY;
