@@ -3,8 +3,15 @@ import javax.swing.JOptionPane;
 
 /**
  * Simulador de torre de tazas y tapas.
+ * 
+ * Relaciones:
+ * - Tower TIENE una coleccion de StackItem (agregacion).
+ *   Un StackItem puede ser Cup o Lid (polimorfismo).
+ * - Tower USA Rectangle para el marco visual (asociacion).
+ * - Cup y Lid HEREDAN de StackItem (herencia).
+ * 
  * @author Juan Diego Valderrama Gaviria y Jhonatan Madero
- * @version 2.0
+ * @version 3.0
  */
 public class Tower {
     
@@ -87,7 +94,7 @@ public class Tower {
         createFrame();
         
         for (int i = 1; i <= cups; i++) {
-            StackItem cup = new StackItem("cup", i, getColor(i));
+            StackItem cup = new Cup(i, getColor(i));
             items.add(cup);
         }
         
@@ -118,7 +125,7 @@ public class Tower {
             return;
         }
         
-        StackItem cup = new StackItem("cup", i, getColor(i));
+        StackItem cup = new Cup(i, getColor(i));
         items.add(cup);
         lastOk = true;
         redraw();
@@ -185,7 +192,7 @@ public class Tower {
             return;
         }
         
-        StackItem lid = new StackItem("lid", i, getColor(i));
+        StackItem lid = new Lid(i, getColor(i));
         items.add(lid);
         lastOk = true;
         redraw();
@@ -265,7 +272,7 @@ public class Tower {
             if (hasCup) {
                 int cupHeight = 2 * num - 1;
                 if (num <= width && currentHeight + cupHeight <= maxHeight) {
-                    items.add(new StackItem("cup", num, getColor(num)));
+                    items.add(new Cup(num, getColor(num)));
                     currentHeight += cupHeight;
                 } else {
                     continue;
@@ -274,7 +281,7 @@ public class Tower {
             
             if (hasLid) {
                 if (num <= width && currentHeight + 1 <= maxHeight) {
-                    items.add(new StackItem("lid", num, getColor(num)));
+                    items.add(new Lid(num, getColor(num)));
                     currentHeight += 1;
                 }
             }
@@ -311,7 +318,8 @@ public class Tower {
             }
             
             if (num <= width && currentHeight + itemH <= maxHeight) {
-                items.add(new StackItem(type, num, getColor(num)));
+                StackItem item = createItem(type, num);
+                items.add(item);
                 currentHeight += itemH;
             }
         }
@@ -425,6 +433,7 @@ public class Tower {
     
     /**
      * Retorna la altura total de la torre en cm.
+     * @return altura total en cm
      */
     public int height() {
         lastOk = true;
@@ -433,6 +442,8 @@ public class Tower {
     
     /**
      * Retorna los numeros de las tazas tapadas.
+     * Una taza esta tapada si su tapa esta justo encima.
+     * @return array con los numeros de las tazas tapadas en orden ascendente
      */
     public int[] lidedCups() {
         ArrayList<Integer> result = new ArrayList<Integer>();
@@ -459,6 +470,7 @@ public class Tower {
     
     /**
      * Retorna informacion de los elementos de base a cima.
+     * @return array 2D con {tipo, numero} de cada elemento
      */
     public String[][] stackingItems() {
         String[][] result = new String[items.size()][2];
@@ -509,12 +521,18 @@ public class Tower {
     
     //VISIBILIDAD
     
+    /**
+     * Hace visible la torre y todos sus elementos.
+     */
     public void makeVisible() {
         visible = true;
         lastOk = true;
         redraw();
     }
     
+    /**
+     * Hace invisible la torre y todos sus elementos.
+     */
     public void makeInvisible() {
         visible = false;
         eraseAllItems();
@@ -522,6 +540,9 @@ public class Tower {
         lastOk = true;
     }
     
+    /**
+     * Cierra el simulador.
+     */
     public void exit() {
         makeInvisible();
         items.clear();
@@ -529,12 +550,20 @@ public class Tower {
         System.exit(0);
     }
     
+    /**
+     * Retorna si la ultima operacion fue exitosa.
+     * @return true si la ultima operacion fue exitosa
+     */
     public boolean ok() {
         return lastOk;
     }
     
     //METODOS PRIVADOS
     
+    /**
+     * Calcula la altura total sumando las alturas de todos los items.
+     * @return altura total en cm
+     */
     private int computeHeight() {
         int h = 0;
         for (int i = 0; i < items.size(); i++) {
@@ -543,10 +572,36 @@ public class Tower {
         return h;
     }
     
+    /**
+     * Retorna el color asignado a un numero de forma ciclica.
+     * @param number numero del elemento
+     * @return color asignado
+     */
     private String getColor(int number) {
         return COLORS[(number - 1) % COLORS.length];
     }
     
+    /**
+     * Crea un StackItem (Cup o Lid) segun el tipo indicado.
+     * Usa polimorfismo: retorna StackItem pero crea Cup o Lid.
+     * @param type "cup" o "lid"
+     * @param number numero del elemento
+     * @return el StackItem creado
+     */
+    private StackItem createItem(String type, int number) {
+        if (type.equals("cup")) {
+            return new Cup(number, getColor(number));
+        } else {
+            return new Lid(number, getColor(number));
+        }
+    }
+    
+    /**
+     * Verifica si existe un item con el tipo y numero dados.
+     * @param type tipo del item ("cup" o "lid")
+     * @param number numero del item
+     * @return true si existe
+     */
     private boolean existsItem(String type, int number) {
         for (int i = 0; i < items.size(); i++) {
             StackItem si = items.get(i);
@@ -557,6 +612,12 @@ public class Tower {
         return false;
     }
     
+    /**
+     * Busca la posicion de un item con el tipo y numero dados.
+     * @param type tipo del item ("cup" o "lid")
+     * @param number numero del item
+     * @return indice del item, o -1 si no existe
+     */
     private int findItem(String type, int number) {
         for (int i = 0; i < items.size(); i++) {
             StackItem si = items.get(i);
@@ -567,6 +628,14 @@ public class Tower {
         return -1;
     }
     
+    /**
+     * Verifica si un tipo y numero existen en dos listas paralelas.
+     * @param types lista de tipos
+     * @param nums lista de numeros
+     * @param type tipo a buscar
+     * @param number numero a buscar
+     * @return true si se encuentra la combinacion
+     */
     private boolean hasInLists(ArrayList<String> types, ArrayList<Integer> nums,
                                String type, int number) {
         for (int i = 0; i < types.size(); i++) {
@@ -577,12 +646,19 @@ public class Tower {
         return false;
     }
     
+    /**
+     * Borra todos los items de la pantalla.
+     */
     private void eraseAllItems() {
         for (int i = 0; i < items.size(); i++) {
             items.get(i).erase();
         }
     }
     
+    /**
+     * Muestra un mensaje de error si la torre es visible.
+     * @param message mensaje de error
+     */
     private void showError(String message) {
         if (visible) {
             JOptionPane.showMessageDialog(null, message, "Error",
@@ -590,6 +666,10 @@ public class Tower {
         }
     }
     
+    /**
+     * Ordena una lista de enteros de mayor a menor usando bubble sort.
+     * @param list lista a ordenar
+     */
     private void sortDescending(ArrayList<Integer> list) {
         for (int i = 0; i < list.size() - 1; i++) {
             for (int j = 0; j < list.size() - 1 - i; j++) {
@@ -602,6 +682,10 @@ public class Tower {
         }
     }
     
+    /**
+     * Ordena una lista de enteros de menor a mayor usando bubble sort.
+     * @param list lista a ordenar
+     */
     private void sortAscending(ArrayList<Integer> list) {
         for (int i = 0; i < list.size() - 1; i++) {
             for (int j = 0; j < list.size() - 1 - i; j++) {
@@ -614,6 +698,11 @@ public class Tower {
         }
     }
     
+    /**
+     * Actualiza el estado visual de las tazas tapadas.
+     * Recorre todos los items y marca como tapada la taza
+     * que tiene su tapa justo encima.
+     */
     private void updateCoveredStatus() {
         for (int i = 0; i < items.size(); i++) {
             StackItem si = items.get(i);
@@ -633,6 +722,9 @@ public class Tower {
     
     // ---- Marco visual de la torre ----
     
+    /**
+     * Crea los rectangulos del marco de la torre.
+     */
     private void createFrame() {
         int widthPx = width * SCALE;
         int heightPx = maxHeight * SCALE;
@@ -668,6 +760,9 @@ public class Tower {
         }
     }
     
+    /**
+     * Mueve un rectangulo del marco a una posicion.
+     */
     private void moveRect(Rectangle rect, int curX, int curY,
                           int tarX, int tarY) {
         int dx = tarX - curX;
@@ -676,6 +771,9 @@ public class Tower {
         if (dy != 0) rect.moveVertical(dy);
     }
     
+    /**
+     * Dibuja el marco de la torre.
+     */
     private void drawFrame() {
         if (!visible) return;
         int widthPx = width * SCALE;
@@ -712,6 +810,9 @@ public class Tower {
         }
     }
     
+    /**
+     * Borra el marco de la torre de la pantalla.
+     */
     private void eraseFrame() {
         towerBase.makeInvisible();
         towerLeft.makeInvisible();
@@ -721,6 +822,11 @@ public class Tower {
         }
     }
     
+    /**
+     * Redibuja toda la torre: marco, estado de tapado y todos los items.
+     * Usa polimorfismo: llama draw() en cada StackItem y Java
+     * ejecuta el metodo correcto segun si es Cup o Lid.
+     */
     private void redraw() {
         if (!visible) return;
         
