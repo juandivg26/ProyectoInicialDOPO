@@ -133,6 +133,7 @@ public class Tower {
     
     /**
      * Elimina la taza de la cima (si la cima es una taza).
+     * Si la taza esta tapada, elimina tambien la tapa.
      */
     public void popCup() {
         if (items.isEmpty()) {
@@ -146,14 +147,21 @@ public class Tower {
             showError("El elemento en la cima no es una taza.");
             return;
         }
+        int idx = items.size() - 1;
+        // Si esta tapada, eliminar primero la tapa
+        if (isCupCovered(idx)) {
+            items.get(idx + 1).erase();
+            items.remove(idx + 1);
+        }
         top.erase();
-        items.remove(items.size() - 1);
+        items.remove(idx);
         lastOk = true;
         redraw();
     }
     
     /**
      * Elimina la taza i de cualquier posicion en la torre.
+     * Si la taza esta tapada, elimina tambien la tapa ya que forman un solo objeto.
      * @param i numero de la taza a eliminar
      */
     public void removeCup(int i) {
@@ -162,6 +170,11 @@ public class Tower {
             lastOk = false;
             showError("La taza " + i + " no esta en la torre.");
             return;
+        }
+        // Si la taza esta tapada, eliminar tambien la tapa
+        if (isCupCovered(idx)) {
+            items.get(idx + 1).erase();
+            items.remove(idx + 1);
         }
         items.get(idx).erase();
         items.remove(idx);
@@ -221,6 +234,7 @@ public class Tower {
     
     /**
      * Elimina la tapa i de cualquier posicion en la torre.
+     * Si la tapa estaba sobre su taza (tapandola), la taza queda destapada.
      * @param i numero de la tapa a eliminar
      */
     public void removeLid(int i) {
@@ -229,6 +243,13 @@ public class Tower {
             lastOk = false;
             showError("La tapa " + i + " no esta en la torre.");
             return;
+        }
+        // Si habia una taza tapada justo debajo, destaparla
+        if (idx > 0) {
+            StackItem below = items.get(idx - 1);
+            if (below.getType().equals("cup") && below.getNumber() == i) {
+                below.setCovered(false);
+            }
         }
         items.get(idx).erase();
         items.remove(idx);
@@ -240,9 +261,11 @@ public class Tower {
     
     /**
      * Ordena de mayor a menor. El menor queda en la cima.
-     * Si taza y tapa del mismo numero estan, la tapa va sobre la taza.
+     * Si taza y tapa del mismo numero estan en la torre, la tapa va sobre la taza.
+     * No se descartan elementos: todos se conservan en el nuevo orden.
      */
     public void orderTower() {
+        // Guardar todos los items actuales
         ArrayList<String> oldTypes = new ArrayList<String>();
         ArrayList<Integer> oldNumbers = new ArrayList<Integer>();
         for (int i = 0; i < items.size(); i++) {
@@ -250,6 +273,7 @@ public class Tower {
             oldNumbers.add(items.get(i).getNumber());
         }
         
+        // Obtener numeros unicos y ordenarlos de mayor a menor
         ArrayList<Integer> numbers = new ArrayList<Integer>();
         for (int i = 0; i < oldNumbers.size(); i++) {
             int num = oldNumbers.get(i);
@@ -262,28 +286,18 @@ public class Tower {
         eraseAllItems();
         items.clear();
         
-        int currentHeight = 0;
-        
+        // Reconstruir: para cada numero (mayor a menor),
+        // primero la taza si existe, luego la tapa si existe
         for (int i = 0; i < numbers.size(); i++) {
             int num = numbers.get(i);
             boolean hasCup = hasInLists(oldTypes, oldNumbers, "cup", num);
             boolean hasLid = hasInLists(oldTypes, oldNumbers, "lid", num);
             
             if (hasCup) {
-                int cupHeight = 2 * num - 1;
-                if (num <= width && currentHeight + cupHeight <= maxHeight) {
-                    items.add(new Cup(num, getColor(num)));
-                    currentHeight += cupHeight;
-                } else {
-                    continue;
-                }
+                items.add(new Cup(num, getColor(num)));
             }
-            
             if (hasLid) {
-                if (num <= width && currentHeight + 1 <= maxHeight) {
-                    items.add(new Lid(num, getColor(num)));
-                    currentHeight += 1;
-                }
+                items.add(new Lid(num, getColor(num)));
             }
         }
         
@@ -293,34 +307,39 @@ public class Tower {
     
     /**
      * Invierte el orden de los elementos.
+     * Las tazas tapadas se tratan como una unidad: taza+tapa se invierten juntas.
+     * No se descartan elementos: todos los items se conservan en orden inverso.
      */
     public void reverseTower() {
-        ArrayList<String> revTypes = new ArrayList<String>();
-        ArrayList<Integer> revNumbers = new ArrayList<Integer>();
+        // Construir lista de "unidades" a invertir.
+        // Una taza tapada cuenta como una unidad de dos elementos.
+        ArrayList<ArrayList<StackItem>> units = new ArrayList<ArrayList<StackItem>>();
         
-        for (int i = items.size() - 1; i >= 0; i--) {
-            revTypes.add(items.get(i).getType());
-            revNumbers.add(items.get(i).getNumber());
+        int i = 0;
+        while (i < items.size()) {
+            ArrayList<StackItem> unit = new ArrayList<StackItem>();
+            unit.add(items.get(i));
+            // Si es una taza tapada, incluir la tapa en la misma unidad
+            if (isCupCovered(i)) {
+                unit.add(items.get(i + 1));
+                i += 2;
+            } else {
+                i++;
+            }
+            units.add(unit);
         }
         
+        // Borrar visualmente todos los items
         eraseAllItems();
         items.clear();
         
-        int currentHeight = 0;
-        for (int i = 0; i < revTypes.size(); i++) {
-            String type = revTypes.get(i);
-            int num = revNumbers.get(i);
-            int itemH;
-            if (type.equals("cup")) {
-                itemH = 2 * num - 1;
-            } else {
-                itemH = 1;
-            }
-            
-            if (num <= width && currentHeight + itemH <= maxHeight) {
-                StackItem item = createItem(type, num);
-                items.add(item);
-                currentHeight += itemH;
+        // Reconstruir en orden inverso de unidades
+        for (int u = units.size() - 1; u >= 0; u--) {
+            ArrayList<StackItem> unit = units.get(u);
+            for (int k = 0; k < unit.size(); k++) {
+                StackItem si = unit.get(k);
+                // Recrear el item para que se dibuje correctamente
+                items.add(createItem(si.getType(), si.getNumber()));
             }
         }
         
@@ -373,9 +392,34 @@ public class Tower {
             return;
         }
         
-        StackItem temp = items.get(idx1);
-        items.set(idx1, items.get(idx2));
-        items.set(idx2, temp);
+        // Obtener el "bloque" de cada objeto:
+        // Un bloque es el item mas su contenido si es una taza.
+        // El contenido de una taza va desde su indice+1 hasta su tapa (inclusive) si esta tapada,
+        // o hasta el primer item que no cabe dentro si esta abierta.
+        ArrayList<StackItem> bloque1 = getBloque(idx1);
+        ArrayList<StackItem> bloque2 = getBloque(idx2);
+
+        // Quitar ambos bloques de la lista (de mayor indice a menor para no desplazar)
+        int startIdx1 = idx1;
+        int startIdx2 = idx2;
+
+        // Asegurarse de trabajar con el de mayor indice primero
+        if (startIdx1 > startIdx2) {
+            // Quitar bloque1 primero
+            for (int k = 0; k < bloque1.size(); k++) items.remove(startIdx1);
+            for (int k = 0; k < bloque2.size(); k++) items.remove(startIdx2);
+            // Insertar bloque2 donde estaba bloque1 y bloque1 donde estaba bloque2
+            for (int k = bloque1.size() - 1; k >= 0; k--) items.add(startIdx2, bloque1.get(k));
+            for (int k = bloque2.size() - 1; k >= 0; k--) items.add(startIdx2, bloque2.get(k));
+        } else {
+            // Quitar bloque2 primero
+            for (int k = 0; k < bloque2.size(); k++) items.remove(startIdx2);
+            for (int k = 0; k < bloque1.size(); k++) items.remove(startIdx1);
+            // Insertar bloque1 donde estaba bloque2 y bloque2 donde estaba bloque1
+            int adj = startIdx2 - bloque1.size();
+            for (int k = bloque2.size() - 1; k >= 0; k--) items.add(startIdx1, bloque2.get(k));
+            for (int k = bloque1.size() - 1; k >= 0; k--) items.add(adj, bloque1.get(k));
+        }
         
         lastOk = true;
         redraw();
@@ -561,15 +605,79 @@ public class Tower {
     //METODOS PRIVADOS
     
     /**
-     * Calcula la altura total sumando las alturas de todos los items.
-     * @return altura total en cm
+     * Calcula la altura real de la torre considerando el anidado de tazas.
+     *
+     * Regla fisica del problema:
+     * - Cada elemento se coloca encima del anterior.
+     * - Una taza pequeña (indice menor) PUEDE ir dentro de una grande (indice mayor).
+     * - Cuando una taza esta dentro de otra, su base queda elevada 1 cm
+     *   (el grosor de la base de la taza contenedora).
+     * - La altura real de la torre es la posicion Y maxima alcanzada por cualquier elemento.
+     *
+     * Algoritmo:
+     * Llevamos un registro de la "taza contenedora actual" (la mas grande abierta).
+     * Cuando colocamos un elemento:
+     *   - Si es una taza que CABE dentro de la contenedora actual (numero menor),
+     *     su base empieza en (base_contenedora + 1) y su tope es (base + altura_taza).
+     *   - Si NO cabe (numero mayor o es tapa sin contenedora), se apila encima del tope actual.
+     * La altura de la torre es el tope maximo alcanzado.
+     *
+     * @return altura total real en cm
      */
     private int computeHeight() {
-        int h = 0;
+        if (items.isEmpty()) return 0;
+
+        // Pila de contenedoras: guarda el tope de cada taza contenedora abierta
+        // Usamos un arreglo simple como pila
+        int[] containerTop = new int[items.size()];
+        int[] containerNumber = new int[items.size()];
+        int stackSize = 0;
+
+        int towerTop = 0; // maximo tope alcanzado
+        int currentBase = 0; // base donde se coloca el proximo elemento
+
         for (int i = 0; i < items.size(); i++) {
-            h += items.get(i).getHeight();
+            StackItem si = items.get(i);
+
+            if (si.getType().equals("cup")) {
+                int cupNum = si.getNumber();
+                int cupHeight = si.getHeight(); // 2*num - 1
+
+                // Buscar si cabe dentro de alguna contenedora abierta
+                // Cabe dentro de la contenedora si cupNum < containerNumber
+                // Buscar la contenedora mas pequeña que la contenga
+                // (la que esta en el tope de la pila de contenedoras)
+                while (stackSize > 0 && containerNumber[stackSize - 1] <= cupNum) {
+                    // Esta contenedora no puede contener esta taza, cerrarla
+                    stackSize--;
+                }
+
+                if (stackSize > 0) {
+                    // La taza cabe dentro de la contenedora del tope de la pila
+                    // Su base empieza 1 cm arriba de la base de la contenedora
+                    // (el grosor de la base de la contenedora)
+                    currentBase = containerTop[stackSize - 1] - (2 * containerNumber[stackSize - 1] - 1) + 1;
+                } else {
+                    // No hay contenedora: se apila encima del tope actual
+                    currentBase = towerTop;
+                }
+
+                int cupTop = currentBase + cupHeight;
+                if (cupTop > towerTop) towerTop = cupTop;
+
+                // Esta taza puede ser contenedora para las siguientes
+                containerNumber[stackSize] = cupNum;
+                containerTop[stackSize] = cupTop;
+                stackSize++;
+
+            } else {
+                // Es una tapa (height = 1), se apila encima del tope actual
+                int lidTop = towerTop + 1;
+                if (lidTop > towerTop) towerTop = lidTop;
+            }
         }
-        return h;
+
+        return towerTop;
     }
     
     /**
@@ -594,6 +702,50 @@ public class Tower {
         } else {
             return new Lid(number, getColor(number));
         }
+    }
+    
+    /**
+     * Retorna el bloque de items que corresponden a un elemento y su contenido.
+     * Para una taza abierta: solo la taza (bloque de 1).
+     * Para una taza tapada: la taza + todo su contenido + su tapa.
+     * Para una tapa o item sin contenido: bloque de 1.
+     * @param idx indice del item en la lista
+     * @return lista de StackItems que forman el bloque
+     */
+    private ArrayList<StackItem> getBloque(int idx) {
+        ArrayList<StackItem> bloque = new ArrayList<StackItem>();
+        if (idx < 0 || idx >= items.size()) return bloque;
+        StackItem si = items.get(idx);
+        bloque.add(si);
+        if (!si.getType().equals("cup")) return bloque;
+        // Si esta tapada, incluir todo hasta la tapa (inclusive)
+        if (isCupCovered(idx)) {
+            // Incluir items internos + tapa
+            int cupNum = si.getNumber();
+            for (int k = idx + 1; k < items.size(); k++) {
+                bloque.add(items.get(k));
+                // Parar cuando encontramos la tapa de esta taza
+                if (items.get(k).getType().equals("lid") && items.get(k).getNumber() == cupNum) {
+                    break;
+                }
+            }
+        }
+        return bloque;
+    }
+
+    /**
+     * Verifica si la taza en el indice dado esta tapada.
+     * Una taza esta tapada si el elemento justo siguiente es su tapa.
+     * @param cupIdx indice de la taza en items
+     * @return true si la taza tiene su tapa justo encima
+     */
+    private boolean isCupCovered(int cupIdx) {
+        if (cupIdx < 0 || cupIdx >= items.size()) return false;
+        StackItem cup = items.get(cupIdx);
+        if (!cup.getType().equals("cup")) return false;
+        if (cupIdx + 1 >= items.size()) return false;
+        StackItem next = items.get(cupIdx + 1);
+        return next.getType().equals("lid") && next.getNumber() == cup.getNumber();
     }
     
     /**
@@ -824,8 +976,8 @@ public class Tower {
     
     /**
      * Redibuja toda la torre: marco, estado de tapado y todos los items.
-     * Usa polimorfismo: llama draw() en cada StackItem y Java
-     * ejecuta el metodo correcto segun si es Cup o Lid.
+     * El orden de dibujo es de mayor a menor numero para que las tazas
+     * pequenas (que van dentro) se dibujen encima visualmente.
      */
     private void redraw() {
         if (!visible) return;
@@ -836,11 +988,120 @@ public class Tower {
         
         updateCoveredStatus();
         
-        int currentY = 0;
+        int[] positions = computePositions();
+        
+        // Dibujar primero las tazas grandes (contenedoras) y luego las pequenas
+        // para que las pequenas queden visualmente encima.
+        // Ordenar indices por numero de taza descendente para dibujo correcto.
+        // Primero dibujar cups de mayor a menor numero, luego las tapas encima.
+        
+        // Paso 1: dibujar todas las tazas de mayor numero a menor
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).getType().equals("cup")) {
+                items.get(i).draw(CENTER_X, BASE_Y, positions[i]);
+            }
+        }
+        // Paso 2: dibujar todas las tapas encima
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).getType().equals("lid")) {
+                items.get(i).draw(CENTER_X, BASE_Y, positions[i]);
+            }
+        }
+    }
+    
+    /**
+     * Calcula la posicion Y base (en cm) de cada elemento de la lista.
+     *
+     * Modelo de caja fisica:
+     * - La lista items representa el orden de colocacion de abajo hacia arriba.
+     * - Una taza ABIERTA (no tapada) puede contener tazas menores que vengan despues en la lista.
+     * - Una taza TAPADA (su tapa aparece justo despues en la lista) esta cerrada:
+     *     * Nada puede entrar dentro de ella.
+     *     * Todo lo que tenia dentro antes de taparse sigue adentro.
+     * - Cuando se mueve una taza tapada, su contenido (items entre la taza y su tapa) va con ella.
+     *
+     * Algoritmo:
+     * Recorremos la lista. Mantenemos una pila de "contenedoras abiertas".
+     * Una contenedora se cierra cuando encontramos su tapa en la lista.
+     * Al cerrarla, los items que estaban dentro de ella quedan fijos en sus posiciones.
+     * Los items que vienen despues de la tapa se apilan encima del tope de la torre.
+     *
+     * @return array con la posicion base (cm desde la base) de cada item
+     */
+    private int[] computePositions() {
+        int[] positions = new int[items.size()];
+        if (items.isEmpty()) return positions;
+
+        // Pila de contenedoras abiertas: guardamos su indice en items
+        int[] stackIdx = new int[items.size()];
+        int stackSize = 0;
+        int towerTop = 0; // tope maximo actual de la torre
+
         for (int i = 0; i < items.size(); i++) {
             StackItem si = items.get(i);
-            si.draw(CENTER_X, BASE_Y, currentY);
-            currentY += si.getHeight();
+
+            if (si.getType().equals("cup")) {
+                int cupNum = si.getNumber();
+
+                // Cerrar contenedoras de la pila que no pueden contener esta taza
+                // (su numero es menor o igual al de la taza actual)
+                while (stackSize > 0) {
+                    int topIdx = stackIdx[stackSize - 1];
+                    if (items.get(topIdx).getNumber() <= cupNum) {
+                        stackSize--;
+                    } else {
+                        break;
+                    }
+                }
+
+                if (stackSize > 0) {
+                    // Entra dentro de la contenedora del tope de la pila
+                    int contIdx = stackIdx[stackSize - 1];
+                    positions[i] = positions[contIdx] + 1;
+                } else {
+                    // No hay contenedora: va encima del tope de la torre
+                    positions[i] = towerTop;
+                }
+
+                int myTop = positions[i] + si.getHeight();
+                if (myTop > towerTop) towerTop = myTop;
+
+                // Esta taza es candidata a ser contenedora de las siguientes
+                stackIdx[stackSize] = i;
+                stackSize++;
+
+            } else {
+                // Es una tapa (lid)
+                int lidNum = si.getNumber();
+
+                // Verificar si es la tapa de la contenedora del tope de la pila
+                boolean esTapaDeContenedora = (stackSize > 0)
+                    && items.get(stackIdx[stackSize - 1]).getNumber() == lidNum;
+
+                if (esTapaDeContenedora) {
+                    // Va justo encima de su taza (cover)
+                    int contIdx = stackIdx[stackSize - 1];
+                    positions[i] = positions[contIdx] + items.get(contIdx).getHeight();
+                    int lidTop = positions[i] + 1;
+                    if (lidTop > towerTop) towerTop = lidTop;
+                    // Cerrar esta contenedora: ya esta tapada
+                    stackSize--;
+                } else if ((i > 0)
+                    && items.get(i - 1).getType().equals("cup")
+                    && items.get(i - 1).getNumber() == lidNum) {
+                    // Esta justo despues de su taza aunque no sea del tope
+                    // (cover de taza que no es contenedora activa)
+                    positions[i] = positions[i - 1] + items.get(i - 1).getHeight();
+                    int lidTop = positions[i] + 1;
+                    if (lidTop > towerTop) towerTop = lidTop;
+                } else {
+                    // pushLid normal: va encima del tope
+                    positions[i] = towerTop;
+                    towerTop += 1;
+                }
+            }
         }
+
+        return positions;
     }
 }
