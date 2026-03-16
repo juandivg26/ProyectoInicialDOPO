@@ -1,0 +1,28 @@
+Retroespectiva ciclo 3
+1. ¿Cuáles fueron los mini-ciclos definidos? Justifíquenlos.
+
+Ciclo 1: Crear torre, gestionar tazas y tapas (push, pop, remove)
+Ciclo 2: Reorganizar (order, reverse, swap, cover) + consultas
+Ciclo 3: TowerContest (solve, simulate)
+
+2. ¿Cuál es el estado actual del proyecto en términos de mini-ciclos? ¿Por qué?
+es incompleto ya que nos estaba fallando la funciones de las copas que se meten en otras y por ende no logramos terminar los test
+
+
+3.¿Cuál fue el tiempo total invertido por cada uno de ustedes? (Horas/Hombre)
+El tiempo invertido fue de 10 horas para cada uno 
+
+4. ¿Cuál consideran fue el mayor logro? ¿Por qué?
+Nuetro mayor logro fue completar y lograr el objetivo de simular el problema de la maratón a pesar de los errores
+
+5. ¿Cuál consideran que fue el mayor problema técnico? ¿Qué hicieron para resolverlo?
+Nuestro problema técnico fue la parte que no entendimos como hacer para que funcione correctamente las copas y no logramos al 100% el objetivo 
+
+6. ¿Qué hicieron bien como equipo? ¿Qué se comprometen a hacer para mejorar los resultados?
+Lo que hicimos bien en equipo fue repartirnos el trabajo y encontrarnos para hacer el proyecto en huecos de la u
+
+7. Considerando las prácticas XP incluidas en los laboratorios. ¿cuál fue la más útil? ¿por qué?
+La práctica que consideramo mas util fue pair programing ya que haciendo los codigos y los test mietras uno programaba el otro sepercataba de lo errores y iba proponiendo mas ideas para el codigo 
+
+8. ¿Qué referencias usaron? ¿Cuál fue la más útil? Incluyan citas con estándares adecuados.
+Las referencias que usamos fueron la API de java para consultar funciones y librerías, tambien utilizamos una ia para completar algunas documentaciones de ciertos métodos.
