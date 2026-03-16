@@ -13,7 +13,7 @@ import javax.swing.JOptionPane;
  * @author Juan Diego Valderrama Gaviria y Jhonatan Madero
  * @version 3.0
  */
-public class Tower {
+public class Tower { 
     
     private int width;
     private int maxHeight;
@@ -358,12 +358,11 @@ public class Tower {
             showError("Los objetos deben tener tipo y numero.");
             return;
         }
-        
+    
         String type1 = o1[0];
         String type2 = o2[0];
-        int num1;
-        int num2;
-        
+        int num1, num2;
+    
         try {
             num1 = Integer.parseInt(o1[1]);
             num2 = Integer.parseInt(o2[1]);
@@ -372,18 +371,13 @@ public class Tower {
             showError("Los numeros no son validos.");
             return;
         }
-        
+    
         int idx1 = findItem(type1, num1);
         int idx2 = findItem(type2, num2);
-        
-        if (idx1 == -1) {
+    
+        if (idx1 == -1 || idx2 == -1) {
             lastOk = false;
-            showError("No se encontro " + type1 + " " + num1 + ".");
-            return;
-        }
-        if (idx2 == -1) {
-            lastOk = false;
-            showError("No se encontro " + type2 + " " + num2 + ".");
+            showError("No se encontro alguno de los objetos.");
             return;
         }
         if (idx1 == idx2) {
@@ -391,39 +385,49 @@ public class Tower {
             showError("No se puede intercambiar un objeto consigo mismo.");
             return;
         }
-        
-        // Obtener el "bloque" de cada objeto:
-        // Un bloque es el item mas su contenido si es una taza.
-        // El contenido de una taza va desde su indice+1 hasta su tapa (inclusive) si esta tapada,
-        // o hasta el primer item que no cabe dentro si esta abierta.
-        ArrayList<StackItem> bloque1 = getBloque(idx1);
-        ArrayList<StackItem> bloque2 = getBloque(idx2);
-
-        // Quitar ambos bloques de la lista (de mayor indice a menor para no desplazar)
-        int startIdx1 = idx1;
-        int startIdx2 = idx2;
-
-        // Asegurarse de trabajar con el de mayor indice primero
-        if (startIdx1 > startIdx2) {
-            // Quitar bloque1 primero
-            for (int k = 0; k < bloque1.size(); k++) items.remove(startIdx1);
-            for (int k = 0; k < bloque2.size(); k++) items.remove(startIdx2);
-            // Insertar bloque2 donde estaba bloque1 y bloque1 donde estaba bloque2
-            for (int k = bloque1.size() - 1; k >= 0; k--) items.add(startIdx2, bloque1.get(k));
-            for (int k = bloque2.size() - 1; k >= 0; k--) items.add(startIdx2, bloque2.get(k));
-        } else {
-            // Quitar bloque2 primero
-            for (int k = 0; k < bloque2.size(); k++) items.remove(startIdx2);
-            for (int k = 0; k < bloque1.size(); k++) items.remove(startIdx1);
-            // Insertar bloque1 donde estaba bloque2 y bloque2 donde estaba bloque1
-            int adj = startIdx2 - bloque1.size();
-            for (int k = bloque2.size() - 1; k >= 0; k--) items.add(startIdx1, bloque2.get(k));
-            for (int k = bloque1.size() - 1; k >= 0; k--) items.add(adj, bloque1.get(k));
+     
+        // Normalizar: bloque1 siempre antes que bloque2
+        if (idx1 > idx2) {
+            int tmpI = idx1; idx1 = idx2; idx2 = tmpI;
+            String tmpT = type1; type1 = type2; type2 = tmpT;
+            int tmpN = num1; num1 = num2; num2 = tmpN;
         }
-        
+    
+        ArrayList<StackItem> block1 = getBloque(idx1);
+        ArrayList<StackItem> block2 = getBloque(idx2);
+    
+        int start1 = idx1;
+        int end1 = idx1 + block1.size() - 1;
+        int start2 = idx2;
+        int end2 = idx2 + block2.size() - 1;
+    
+        // Si se traslapan, invalidar (protección extra)
+        if (end1 >= start2) {
+            lastOk = false;
+            showError("No se puede intercambiar bloques traslapados.");
+            return;
+        }
+    
+        ArrayList<StackItem> newItems = new ArrayList<StackItem>();
+        int i = 0;
+        while (i < items.size()) {
+            if (i == start1) {
+                for (int k = 0; k < block2.size(); k++) newItems.add(block2.get(k));
+                i = end1 + 1; // saltar bloque1 original
+            } else if (i == start2) {
+                for (int k = 0; k < block1.size(); k++) newItems.add(block1.get(k));
+                i = end2 + 1; // saltar bloque2 original
+            } else {
+                newItems.add(items.get(i));
+                i++;
+            }
+        }
+    
+        items = newItems;
         lastOk = true;
         redraw();
     }
+
     
     /**
      * Tapa las tazas que tienen sus tapas en la torre.
