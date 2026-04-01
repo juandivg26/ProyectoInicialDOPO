@@ -1,27 +1,24 @@
 package tower;
 
+import shapes.Rectangle;
+
 /**
  * LidFearful: tapa especial asustada.
- * Tiene dos comportamientos especiales respecto a la tapa normal:
- * <ul>
- *   <li>No entra a la torre si su taza companiera no esta en ella.</li>
- *   <li>No puede removerse si en este momento esta tapando (justo encima)
- *       a su taza companiera.</li>
- * </ul>
- * La verificacion de entrada la realiza Tower antes de llamar al constructor;
- * la verificacion de salida la realiza Tower en removeLid / popLid.
+ * No entra si su taza companiera no esta en la torre.
+ * No puede removerse si esta tapando a su taza companiera.
+ * Se distingue visualmente por una franja vertical negra al centro.
  * Hereda de Lid.
  *
  * @author Juan Diego Valderrama Gaviria y Jhonatan Madero
- * @version 2.0
+ * @version 3.0
  */
 public class LidFearful extends Lid {
 
-    /**
-     * Indica si esta tapa esta actualmente tapando (justo encima de)
-     * su taza companiera. Se actualiza en Tower cada vez que se redibuja.
-     */
     private boolean isProtectingCup;
+
+    /** Franja vertical al centro de la tapa. */
+    private Rectangle stripe;
+    private int stripeX, stripeY;
 
     /**
      * Constructor de LidFearful.
@@ -31,43 +28,42 @@ public class LidFearful extends Lid {
     public LidFearful(int number, String color) {
         super(number, color);
         this.isProtectingCup = false;
+        stripe = new Rectangle();
+        stripe.changeSize(1 * SCALE, 3);
+        stripe.changeColor("black");
+        stripeX = DEFAULT_X;
+        stripeY = DEFAULT_Y;
     }
 
     /**
-     * Retorna el subtipo de esta tapa.
-     * @return "fearful"
+     * Dibuja la tapa fearful con su franja vertical al centro.
      */
     @Override
-    public String getSubtype() {
-        return "fearful";
+    public void draw(int towerCenterX, int towerBaseY, int yPositionCm) {
+        super.draw(towerCenterX, towerBaseY, yPositionCm);
+        int targetX = towerCenterX - 1;
+        int targetY = towerBaseY - yPositionCm * SCALE - 1 * SCALE;
+        moveTo(stripe, stripeX, stripeY, targetX, targetY);
+        stripeX = targetX;
+        stripeY = targetY;
+        stripe.makeVisible();
     }
 
     /**
-     * Indica si esta tapa puede salir de la torre.
-     * Una tapa fearful NO puede removerse si en este momento esta
-     * cubriendo (justo encima de) su taza companiera.
-     *
-     * @return true si puede removerse, false si esta protegiendo su taza
+     * Oculta la tapa fearful y su franja.
      */
-    public boolean canBeRemoved() {
-        return !isProtectingCup;
+    @Override
+    public void erase() {
+        super.erase();
+        stripe.makeInvisible();
     }
 
-    /**
-     * Actualiza si esta tapa esta protegiendo su taza companiera.
-     * Tower llama a este metodo en updateCoveredStatus() y en pushLid().
-     *
-     * @param protecting true si esta justo encima de su taza
-     */
-    public void setProtecting(boolean protecting) {
-        this.isProtectingCup = protecting;
-    }
+    @Override
+    public String getSubtype() { return "fearful"; }
 
-    /**
-     * Retorna si esta tapa esta protegiendo su taza.
-     * @return true si esta protegiendo
-     */
-    public boolean isProtecting() {
-        return isProtectingCup;
-    }
+    public boolean canBeRemoved() { return !isProtectingCup; }
+
+    public void setProtecting(boolean protecting) { this.isProtectingCup = protecting; }
+
+    public boolean isProtecting() { return isProtectingCup; }
 }
