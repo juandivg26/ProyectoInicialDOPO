@@ -1,181 +1,125 @@
-import java.awt.*;
+package shapes;
+
+import java.awt.Graphics2D;
+import java.awt.Color;
+import java.awt.Polygon;
 
 /**
- * A triangle that can be manipulated and that draws itself on a canvas.
+ * Triángulo: una forma geométrica que hereda de Shape
  * 
- * @author  Michael Kolling and David J. Barnes
- * @version 1.0  (15 July 2000)
+ * @author Juan Diego Valderrama Gaviria y Jhonatan Madero
+ * @version 1.0
  */
-
-public class Triangle{
+public class Triangle extends Shape {
     
-    public static int VERTICES=3;
-    
-    private int height;
     private int width;
-    private int xPosition;
-    private int yPosition;
-    private String color;
-    private boolean isVisible;
-
+    private int height;
+    
     /**
-     * Create a new triangle at default position with default color.
+     * Constructor de Triangle
      */
-    public Triangle(){
-        height = 30;
-        width = 40;
-        xPosition = 140;
-        yPosition = 15;
-        color = "green";
-        isVisible = false;
-    }
-
-    /**
-     * Make this triangle visible. If it was already visible, do nothing.
-     */
-    public void makeVisible(){
-        isVisible = true;
-        draw();
+    public Triangle() {
+        super();
+        this.width = 50;
+        this.height = 50;
     }
     
     /**
-     * Make this triangle invisible. If it was already invisible, do nothing.
-     */
-    public void makeInvisible(){
-        erase();
-        isVisible = false;
-    }
-    
-    /**
-     * Move the triangle a few pixels to the right.
-     */
-    public void moveRight(){
-        moveHorizontal(20);
-    }
-
-    /**
-     * Move the triangle a few pixels to the left.
-     */
-    public void moveLeft(){
-        moveHorizontal(-20);
-    }
-
-    /**
-     * Move the triangle a few pixels up.
-     */
-    public void moveUp(){
-        moveVertical(-20);
-    }
-
-    /**
-     * Move the triangle a few pixels down.
-     */
-    public void moveDown(){
-        moveVertical(20);
-    }
-
-    /**
-     * Move the triangle horizontally.
-     * @param distance the desired distance in pixels
-     */
-    public void moveHorizontal(int distance){
-        erase();
-        xPosition += distance;
-        draw();
-    }
-
-    /**
-     * Move the triangle vertically.
-     * @param distance the desired distance in pixels
-     */
-    public void moveVertical(int distance){
-        erase();
-        yPosition += distance;
-        draw();
-    }
-
-    /**
-     * Slowly move the triangle horizontally.
-     * @param distance the desired distance in pixels
-     */
-    public void slowMoveHorizontal(int distance){
-        int delta;
-
-        if(distance < 0) {
-            delta = -1;
-            distance = -distance;
-        } else {
-            delta = 1;
-        }
-
-        for(int i = 0; i < distance; i++){
-            xPosition += delta;
-            draw();
-        }
-    }
-
-    /**
-     * Slowly move the triangle vertically.
-     * @param distance the desired distance in pixels
-     */
-    public void slowMoveVertical(int distance){
-        int delta;
-
-        if(distance < 0) {
-            delta = -1;
-            distance = -distance;
-        } else {
-            delta = 1;
-        }
-
-        for(int i = 0; i < distance; i++){
-            yPosition += delta;
-            draw();
-        }
-    }
-
-    /**
-     * Change the size to the new size
-     * @param newHeight the new height in pixels. newHeight must be >=0.
-     * @param newWidht the new width in pixels. newWidht must be >=0.
+     * Cambia el tamaño del triángulo
+     * @param newHeight nuevo alto
+     * @param newWidth nuevo ancho
      */
     public void changeSize(int newHeight, int newWidth) {
-        erase();
-        height = newHeight;
-        width = newWidth;
-        draw();
+        this.height = newHeight;
+        this.width = newWidth;
     }
     
     /**
-     * Change the color. 
-     * @param color the new color. Valid colors are "red", "yellow", "blue", "green",
-     * "magenta" and "black".
+     * Retorna el ancho del triángulo
      */
-    public void changeColor(String newColor){
-        color = newColor;
-        draw();
+    public int getWidth() {
+        return width;
     }
-
-    /*
-     * Draw the triangle with current specifications on screen.
+    
+    /**
+     * Retorna el alto del triángulo
      */
-    private void draw(){
-        if(isVisible) {
-            Canvas canvas = Canvas.getCanvas();
-            int[] xpoints = { xPosition, xPosition + (width/2), xPosition - (width/2) };
-            int[] ypoints = { yPosition, yPosition + height, yPosition + height };
-            canvas.draw(this, color, new Polygon(xpoints, ypoints, 3));
-            canvas.wait(10);
-        }
+    public int getHeight() {
+        return height;
     }
-
-    /*
-     * Erase the triangle on screen.
+    
+    /**
+     * Dibuja el triángulo
      */
-    private void erase(){
-        if(isVisible) {
-            Canvas canvas = Canvas.getCanvas();
-            canvas.erase(this);
-        }
+    @Override
+    public void draw(Graphics2D g) {
+        if (!isVisible) return;
+        
+        int[] xPoints = {xPosition, xPosition + width / 2, xPosition + width};
+        int[] yPoints = {yPosition + height, yPosition, yPosition + height};
+        
+        Polygon triangle = new Polygon(xPoints, yPoints, 3);
+        
+        g.setColor(getColorFromString(color));
+        g.fillPolygon(triangle);
+    }
+    
+    /**
+     * Borra el triángulo de la pantalla
+     */
+    @Override
+    public void erase() {
+        isVisible = false;
+    }
+    
+    /**
+     * Mueve el triángulo horizontalmente
+     */
+    @Override
+    public void moveHorizontal(int distance) {
+        xPosition += distance;
+    }
+    
+    /**
+     * Mueve el triángulo verticalmente
+     */
+    @Override
+    public void moveVertical(int distance) {
+        yPosition += distance;
+    }
+    
+    /**
+     * Hace visible el triángulo
+     */
+    public void makeVisible() {
+        isVisible = true;
+    }
+    
+    /**
+     * Hace invisible el triángulo
+     */
+    public void makeInvisible() {
+        isVisible = false;
+    }
+    
+    /**
+     * Cambia el color del triángulo
+     */
+    @Override
+    public void changeColor(String newColor) {
+        super.changeColor(newColor);
+    }
+    
+    /**
+     * Convierte un nombre de color (String) a un objeto Color de Java
+     */
+    private Color getColorFromString(String colorName) {
+        if (colorName.equals("red")) return Color.RED;
+        if (colorName.equals("blue")) return Color.BLUE;
+        if (colorName.equals("green")) return Color.GREEN;
+        if (colorName.equals("yellow")) return Color.YELLOW;
+        if (colorName.equals("magenta")) return Color.MAGENTA;
+        if (colorName.equals("white")) return Color.WHITE;
+        return Color.BLACK;
     }
 }

@@ -1,3 +1,5 @@
+package shapes;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
@@ -10,30 +12,31 @@ import java.util.*;
  *
  * @author: Bruce Quig
  * @author: Michael Kolling (mik)
+ * @author: Juan Diego Valderrama Gaviria
  *
- * @version: 1.6 (shapes)
+ * @version: 2.0 (refactored for Shape inheritance)
  */
-public class Canvas{
+public class Canvas {
     // Note: The implementation of this class (specifically the handling of
     // shape identity and colors) is slightly more complex than necessary. This
     // is done on purpose to keep the interface and instance fields of the
     // shape objects in this project clean and simple for educational purposes.
 
-	private static Canvas canvasSingleton;
+    private static Canvas canvasSingleton;
 
-	/**
-	 * Factory method to get the canvas singleton object.
-	 */
-	public static Canvas getCanvas(){
-		if(canvasSingleton == null) {
-			canvasSingleton = new Canvas("BlueJ Shapes Demo", 300, 300, 
-										 Color.white);
-		}
-		canvasSingleton.setVisible(true);
-		return canvasSingleton;
-	}
+    /**
+     * Factory method to get the canvas singleton object.
+     */
+    public static Canvas getCanvas(){
+        if(canvasSingleton == null) {
+            canvasSingleton = new Canvas("BlueJ Shapes Demo", 300, 300, 
+                                         Color.white);
+        }
+        canvasSingleton.setVisible(true);
+        return canvasSingleton;
+    }
 
-	//  ----- instance part -----
+    //  ----- instance part -----
 
     private JFrame frame;
     private CanvasPane canvas;
@@ -41,14 +44,14 @@ public class Canvas{
     private Color backgroundColour;
     private Image canvasImage;
     private List <Object> objects;
-    private HashMap <Object,ShapeDescription> shapes;
+    private HashMap <Object, ShapeDescription> shapes;
     
     /**
      * Create a Canvas.
      * @param title  title to appear in Canvas Frame
      * @param width  the desired width for the canvas
      * @param height  the desired height for the canvas
-     * @param bgClour  the desired background colour of the canvas
+     * @param bgColour  the desired background colour of the canvas
      */
     private Canvas(String title, int width, int height, Color bgColour){
         frame = new JFrame();
@@ -59,7 +62,7 @@ public class Canvas{
         backgroundColour = bgColour;
         frame.pack();
         objects = new ArrayList <Object>();
-        shapes = new HashMap <Object,ShapeDescription>();
+        shapes = new HashMap <Object, ShapeDescription>();
     }
 
     /**
@@ -89,14 +92,12 @@ public class Canvas{
      * @param  color            the color of the shape
      * @param  shape            the shape object to be drawn on the canvas
      */
-     // Note: this is a slightly backwards way of maintaining the shape
-     // objects. It is carefully designed to keep the visible shape interfaces
-     // in this project clean and simple for educational purposes.
     public void draw(Object referenceObject, String color, Shape shape){
-    	objects.remove(referenceObject);   // just in case it was already there
-    	objects.add(referenceObject);      // add at the end
-    	shapes.put(referenceObject, new ShapeDescription(shape, color));
-    	redraw();
+        objects.remove(referenceObject);   // just in case it was already there
+        objects.add(referenceObject);      // add at the end
+        shape.changeColor(color);
+        shapes.put(referenceObject, new ShapeDescription(shape));
+        redraw();
     }
  
     /**
@@ -104,9 +105,9 @@ public class Canvas{
      * @param  referenceObject  the shape object to be erased 
      */
     public void erase(Object referenceObject){
-    	objects.remove(referenceObject);   // just in case it was already there
-    	shapes.remove(referenceObject);
-    	redraw();
+        objects.remove(referenceObject);   // just in case it was already there
+        shapes.remove(referenceObject);
+        redraw();
     }
 
     /**
@@ -114,22 +115,22 @@ public class Canvas{
      * @param  newColour   the new colour for the foreground of the Canvas 
      */
     public void setForegroundColor(String colorString){
-		if(colorString.equals("red"))
-			graphic.setColor(Color.red);
-		else if(colorString.equals("black"))
-			graphic.setColor(Color.black);
-		else if(colorString.equals("blue"))
-			graphic.setColor(Color.blue);
-		else if(colorString.equals("yellow"))
-			graphic.setColor(Color.yellow);
-		else if(colorString.equals("green"))
-			graphic.setColor(Color.green);
-		else if(colorString.equals("magenta"))
-			graphic.setColor(Color.magenta);
-		else if(colorString.equals("white"))
-			graphic.setColor(Color.white);
-		else
-			graphic.setColor(Color.black);
+        if(colorString.equals("red"))
+            graphic.setColor(Color.red);
+        else if(colorString.equals("black"))
+            graphic.setColor(Color.black);
+        else if(colorString.equals("blue"))
+            graphic.setColor(Color.blue);
+        else if(colorString.equals("yellow"))
+            graphic.setColor(Color.yellow);
+        else if(colorString.equals("green"))
+            graphic.setColor(Color.green);
+        else if(colorString.equals("magenta"))
+            graphic.setColor(Color.magenta);
+        else if(colorString.equals("white"))
+            graphic.setColor(Color.white);
+        else
+            graphic.setColor(Color.black);
     }
 
     /**
@@ -146,13 +147,13 @@ public class Canvas{
         }
     }
 
-	/**
-	 * Redraw ell shapes currently on the Canvas.
-	 */
-	private void redraw(){
-		erase();
-		for(Iterator i=objects.iterator(); i.hasNext(); ) {
-                       shapes.get(i.next()).draw(graphic);
+    /**
+     * Redraw all shapes currently on the Canvas.
+     */
+    private void redraw(){
+        erase();
+        for(Iterator i=objects.iterator(); i.hasNext(); ) {
+            shapes.get(i.next()).draw(graphic);
         }
         canvas.repaint();
     }
@@ -164,7 +165,7 @@ public class Canvas{
         Color original = graphic.getColor();
         graphic.setColor(backgroundColour);
         Dimension size = canvas.getSize();
-        graphic.fill(new java.awt.Rectangle(0, 0, size.width, size.height));
+        graphic.fillRect(0, 0, size.width, size.height);
         graphic.setColor(original);
     }
 
@@ -181,24 +182,19 @@ public class Canvas{
     }
     
     /************************************************************************
-     * Inner class CanvasPane - the actual canvas component contained in the
-     * Canvas frame. This is essentially a JPanel with added capability to
-     * refresh the image drawn on it.
+     * Inner class ShapeDescription - stores information about a shape
+     * including the shape and its current color.
      */
     private class ShapeDescription{
-    	private Shape shape;
-    	private String colorString;
+        private Shape shape;
 
-		public ShapeDescription(Shape shape, String color){
-    		this.shape = shape;
-    		colorString = color;
-    	}
+        public ShapeDescription(Shape shape){
+            this.shape = shape;
+        }
 
-		public void draw(Graphics2D graphic){
-			setForegroundColor(colorString);
-			graphic.draw(shape);
-			graphic.fill(shape);
-		}
+        public void draw(Graphics2D graphic){
+            shape.draw(graphic);
+        }
     }
 
 }

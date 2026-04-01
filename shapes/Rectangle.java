@@ -1,186 +1,129 @@
-import java.awt.*;
+package shapes;
+
+import java.awt.Graphics2D;
+import java.awt.Color;
 
 /**
- * A rectangle that can be manipulated and that draws itself on a canvas.
- * 
- * @author  Michael Kolling and David J. Barnes (Modified)
- * @version 1.0  (15 July 2000)()
+ * Rectángulo: una forma geométrica que hereda de Shape
  */
-
-
- 
-public class Rectangle{
-
-    public static int EDGES = 4;
+public class Rectangle extends Shape {
     
-    private int height;
     private int width;
-    private int xPosition;
-    private int yPosition;
-    private String color;
-    private boolean isVisible;
-
-    /**
-     * Create a new rectangle at default position with default color.
-     */
-    public Rectangle(){
-        height = 30;
-        width = 40;
-        xPosition = 70;
-        yPosition = 15;
-        color = "magenta";
-        isVisible = false;
-    }
+    private int height;
+    private static Canvas canvas;
     
-
     /**
-     * Make this rectangle visible. If it was already visible, do nothing.
+     * Constructor de Rectangle
      */
-    public void makeVisible(){
-        isVisible = true;
-        draw();
+    public Rectangle() {
+        super();
+        this.width = 50;
+        this.height = 50;
+        // NO inicializar canvas aquí, solo cuando se necesite
     }
     
     /**
-     * Make this rectangle invisible. If it was already invisible, do nothing.
+     * Obtiene el Canvas singleton (inicialización lazy)
      */
-    public void makeInvisible(){
-        erase();
-        isVisible = false;
+    private static Canvas getSharedCanvas() {
+        if (canvas == null) {
+            canvas = Canvas.getCanvas();
+        }
+        return canvas;
     }
     
     /**
-     * Move the rectangle a few pixels to the right.
-     */
-    public void moveRight(){
-        moveHorizontal(20);
-    }
-
-    /**
-     * Move the rectangle a few pixels to the left.
-     */
-    public void moveLeft(){
-        moveHorizontal(-20);
-    }
-
-    /**
-     * Move the rectangle a few pixels up.
-     */
-    public void moveUp(){
-        moveVertical(-20);
-    }
-
-    /**
-     * Move the rectangle a few pixels down.
-     */
-    public void moveDown(){
-        moveVertical(20);
-    }
-
-    /**
-     * Move the rectangle horizontally.
-     * @param distance the desired distance in pixels
-     */
-    public void moveHorizontal(int distance){
-        erase();
-        xPosition += distance;
-        draw();
-    }
-
-    /**
-     * Move the rectangle vertically.
-     * @param distance the desired distance in pixels
-     */
-    public void moveVertical(int distance){
-        erase();
-        yPosition += distance;
-        draw();
-    }
-
-    /**
-     * Slowly move the rectangle horizontally.
-     * @param distance the desired distance in pixels
-     */
-    public void slowMoveHorizontal(int distance){
-        int delta;
-
-        if(distance < 0) {
-            delta = -1;
-            distance = -distance;
-        } else {
-            delta = 1;
-        }
-
-        for(int i = 0; i < distance; i++){
-            xPosition += delta;
-            draw();
-        }
-    }
-
-    /**
-     * Slowly move the rectangle vertically.
-     * @param distance the desired distance in pixels
-     */
-    public void slowMoveVertical(int distance){
-        int delta;
-
-        if(distance < 0) {
-            delta = -1;
-            distance = -distance;
-        } else {
-            delta = 1;
-        }
-
-        for(int i = 0; i < distance; i++){
-            yPosition += delta;
-            draw();
-        }
-    }
-
-    /**
-     * Change the size to the new size
-     * @param newHeight the new height in pixels. newHeight must be >=0.
-     * @param newWidht the new width in pixels. newWidth must be >=0.
+     * Cambia el tamaño del rectángulo
      */
     public void changeSize(int newHeight, int newWidth) {
-        erase();
-        height = newHeight;
-        width = newWidth;
-        draw();
+        this.height = newHeight;
+        this.width = newWidth;
     }
     
     /**
-     * Change the color. 
-     * @param color the new color. Valid colors are "red", "yellow", "blue", "green",
-     * "magenta" and "black".
+     * Retorna el ancho del rectángulo
      */
-    public void changeColor(String newColor){
-        color = newColor;
-        draw();
+    public int getWidth() {
+        return width;
     }
-
-    /*
-     * Draw the rectangle with current specifications on screen.
+    
+    /**
+     * Retorna el alto del rectángulo
      */
-
-    private void draw() {
-        if(isVisible) {
-            Canvas canvas = Canvas.getCanvas();
-            canvas.draw(this, color,
-                new java.awt.Rectangle(xPosition, yPosition, 
-                                       width, height));
-            canvas.wait(10);
-        }
+    public int getHeight() {
+        return height;
     }
-
-    /*
-     * Erase the rectangle on screen.
+    
+    /**
+     * Dibuja el rectángulo
      */
-    private void erase(){
-        if(isVisible) {
-            Canvas canvas = Canvas.getCanvas();
-            canvas.erase(this);
-        }
+    @Override
+    public void draw(Graphics2D g) {
+        if (!isVisible) return;
+        g.setColor(getColorFromString(color));
+        g.fillRect(xPosition, yPosition, width, height);
+    }
+    
+    /**
+     * Borra el rectángulo de la pantalla
+     */
+    @Override
+    public void erase() {
+        isVisible = false;
+    }
+    
+    /**
+     * Mueve el rectángulo horizontalmente
+     */
+    @Override
+    public void moveHorizontal(int distance) {
+        xPosition += distance;
+    }
+    
+    /**
+     * Mueve el rectángulo verticalmente
+     */
+    @Override
+    public void moveVertical(int distance) {
+        yPosition += distance;
+    }
+    
+    /**
+     * Hace visible el rectángulo
+     */
+    public void makeVisible() {
+        isVisible = true;
+        Canvas c = getSharedCanvas();
+        c.draw(this, color, this);
+    }
+    
+    /**
+     * Hace invisible el rectángulo
+     */
+    public void makeInvisible() {
+        isVisible = false;
+        Canvas c = getSharedCanvas();
+        c.erase(this);
+    }
+    
+    /**
+     * Cambia el color del rectángulo
+     */
+    @Override
+    public void changeColor(String newColor) {
+        super.changeColor(newColor);
+    }
+    
+    /**
+     * Convierte un nombre de color (String) a un objeto Color de Java
+     */
+    private Color getColorFromString(String colorName) {
+        if (colorName.equals("red")) return Color.RED;
+        if (colorName.equals("blue")) return Color.BLUE;
+        if (colorName.equals("green")) return Color.GREEN;
+        if (colorName.equals("yellow")) return Color.YELLOW;
+        if (colorName.equals("magenta")) return Color.MAGENTA;
+        if (colorName.equals("white")) return Color.WHITE;
+        return Color.BLACK;
     }
 }
-
