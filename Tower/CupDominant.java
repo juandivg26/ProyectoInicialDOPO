@@ -1,23 +1,28 @@
 package tower;
 
 import java.util.ArrayList;
+import shapes.Rectangle;
 
 /**
  * CupDominant: taza especial dominante.
  * Al entrar a la torre se inserta en su posicion jerarquica correcta
  * (como CupHierarchical) y ademas elimina todas las tazas mas pequenas
- * que ya estaban dentro de ella, pues no tolera que haya tazas menores
- * a su alrededor.
- *
- * Ejemplo: si la torre tiene [Cup5, Cup2] y entra CupDominant3,
- * la Cup2 es eliminada y la torre queda [Cup5, CupDominant3].
- *
+ * que ya estaban dentro de ella.
+ * Se distingue visualmente por dos franjas horizontales negras (arriba y abajo).
  * Hereda de Cup.
  *
  * @author Juan Diego Valderrama Gaviria y Jhonatan Madero
- * @version 1.0
+ * @version 2.0
  */
 public class CupDominant extends Cup {
+
+    /** Franja superior. */
+    private Rectangle stripeTop;
+    private int stripeTopX, stripeTopY;
+
+    /** Franja inferior. */
+    private Rectangle stripeBot;
+    private int stripeBotX, stripeBotY;
 
     /**
      * Constructor de CupDominant.
@@ -26,6 +31,53 @@ public class CupDominant extends Cup {
      */
     public CupDominant(int number, String color) {
         super(number, color);
+        int widthPx = number * SCALE - 2 * WALL;
+        stripeTop = new Rectangle();
+        stripeTop.changeSize(3, widthPx);
+        stripeTop.changeColor("black");
+        stripeTopX = DEFAULT_X;
+        stripeTopY = DEFAULT_Y;
+
+        stripeBot = new Rectangle();
+        stripeBot.changeSize(3, widthPx);
+        stripeBot.changeColor("black");
+        stripeBotX = DEFAULT_X;
+        stripeBotY = DEFAULT_Y;
+    }
+
+    /**
+     * Dibuja la taza dominant con dos franjas: una arriba y una abajo.
+     */
+    @Override
+    public void draw(int towerCenterX, int towerBaseY, int yPositionCm) {
+        super.draw(towerCenterX, towerBaseY, yPositionCm);
+        int widthPx = number * SCALE;
+        int xLeft = towerCenterX - widthPx / 2 + WALL;
+        int heightPx = height * SCALE;
+
+        int targetTopX = xLeft;
+        int targetTopY = towerBaseY - yPositionCm * SCALE - heightPx + 2;
+        moveTo(stripeTop, stripeTopX, stripeTopY, targetTopX, targetTopY);
+        stripeTopX = targetTopX;
+        stripeTopY = targetTopY;
+        stripeTop.makeVisible();
+
+        int targetBotX = xLeft;
+        int targetBotY = towerBaseY - yPositionCm * SCALE - SCALE - 3;
+        moveTo(stripeBot, stripeBotX, stripeBotY, targetBotX, targetBotY);
+        stripeBotX = targetBotX;
+        stripeBotY = targetBotY;
+        stripeBot.makeVisible();
+    }
+
+    /**
+     * Oculta la taza dominant y sus dos franjas.
+     */
+    @Override
+    public void erase() {
+        super.erase();
+        stripeTop.makeInvisible();
+        stripeBot.makeInvisible();
     }
 
     /**

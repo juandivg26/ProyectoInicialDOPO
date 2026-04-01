@@ -1,22 +1,34 @@
+package tower;
+
+import shapes.Rectangle;
+
 /**
  * Una taza de la torre. Tiene forma de U (base + 2 paredes).
  * La altura de la taza i es 2i-1 cm.
  * Hereda de StackItem.
  * 
+ * Clase ABSTRACTA que sirve como base para tipos específicos de tazas:
+ * - CupNormal: comportamiento estándar
+ * - CupOpener: elimina tapas que impiden el paso
+ * - CupHierarchical: entra en la torre desplazando todo
+ * 
  * @author Juan Diego Valderrama Gaviria y Jhonatan Madero
  * @version 3.0
  */
-public class Cup extends StackItem {
+public abstract class Cup extends StackItem {
     
-    private Rectangle wallLeft;
-    private Rectangle wallRight;
+    protected Rectangle wallLeft;
+    protected Rectangle wallRight;
     
-    private int leftX;
-    private int leftY;
-    private int rightX;
-    private int rightY;
+    protected int leftX;
+    protected int leftY;
+    protected int rightX;
+    protected int rightY;
     
-    private static final int WALL = 3;
+    protected static final int WALL = 3;
+    protected static final int SCALE = 15;
+    protected static final int DEFAULT_X = 70;
+    protected static final int DEFAULT_Y = 15;
 
     /**
      * Crea una taza para la torre.
@@ -33,7 +45,7 @@ public class Cup extends StackItem {
      * Crea los rectangulos que forman la taza:
      * una base (fondo) y dos paredes (izquierda y derecha).
      */
-    private void createShapes() {
+    protected void createShapes() {
         int widthPx = number * SCALE;
         int heightPx = height * SCALE;
         int basePx = 1 * SCALE;
@@ -61,19 +73,26 @@ public class Cup extends StackItem {
      * Retorna el tipo de este elemento.
      * @return "cup"
      */
+    @Override
     public String getType() {
         return "cup";
     }
     
     /**
+     * Retorna el subtipo específico de taza
+     * Cada subclase implementa esto
+     * @return "normal", "opener", "hierarchical", etc.
+     */
+    public abstract String getSubtype();
+    
+    /**
      * Marca la taza como tapada o destapada.
-     * Cambia la apariencia visual: las paredes se ponen blancas
+     * Cambia la apariencia visual: las paredes se ponen negras
      * cuando esta tapada, y vuelven al color original cuando
      * esta destapada.
-     * Sobreescribe el metodo del padre (StackItem).
      * @param isCovered true si esta tapada
      */
-       public void setCovered(boolean isCovered) {
+    public void setCovered(boolean isCovered) {
         this.covered = isCovered;
         
         if (isCovered) {
@@ -87,13 +106,11 @@ public class Cup extends StackItem {
     
     /**
      * Dibuja la taza en la posicion indicada dentro de la torre.
-     * Posiciona la base en la parte inferior y las paredes
-     * desde la parte superior hasta la base.
-     * Implementa el metodo abstracto del padre.
      * @param towerCenterX centro horizontal de la torre en pixeles
      * @param towerBaseY posicion Y de la base de la torre en pixeles
      * @param yPositionCm posicion Y del elemento en cm desde la base
      */
+    @Override
     public void draw(int towerCenterX, int towerBaseY, int yPositionCm) {
         int widthPx = number * SCALE;
         int xLeft = towerCenterX - widthPx / 2;
@@ -127,8 +144,8 @@ public class Cup extends StackItem {
     /**
      * Hace invisible la taza.
      * Oculta los tres rectangulos: base, pared izquierda y pared derecha.
-     * Implementa el metodo abstracto del padre.
      */
+    @Override
     public void erase() {
         base.makeInvisible();
         wallLeft.makeInvisible();

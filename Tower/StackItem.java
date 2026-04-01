@@ -1,3 +1,7 @@
+package tower;
+ 
+import shapes.Rectangle;
+
 /**
  * Un elemento de la torre. Puede ser una taza (Cup) o una tapa (Lid).
  * Clase abstracta que define el comportamiento comun de todos los elementos.
@@ -45,6 +49,14 @@ public abstract class StackItem {
      * @return tipo del elemento
      */
     public abstract String getType();
+    
+    /**
+     * Retorna el subtipo específico del elemento.
+     * Para cups: "normal", "opener", "hierarchical"
+     * Para lids: "normal", "fearful", "crazy"
+     * @return subtipo
+     */
+    public abstract String getSubtype();
     
     /**
      * Dibuja el elemento en la posicion indicada.
@@ -100,8 +112,7 @@ public abstract class StackItem {
      * @param isCovered true si esta tapado
      */
     public void setCovered(boolean isCovered) {
-        // Por defecto no hace nada.
-        // Solo Cup sobreescribe este metodo.
+        this.covered = isCovered;
     }
     
     /**
