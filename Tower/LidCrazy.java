@@ -1,44 +1,66 @@
 package tower;
 
+import shapes.Rectangle;
+
 /**
  * LidCrazy: tapa especial loca.
- * En lugar de tapar su taza (altura = 1), se pone de BASE (altura = 0).
- * Esto significa que NO suma altura a la torre.
+ * En lugar de tapar su taza, se ubica de base (altura = 0).
+ * Se distingue visualmente por una franja horizontal negra que ocupa todo su ancho interior.
  * Hereda de Lid.
- * 
+ *
  * @author Juan Diego Valderrama Gaviria y Jhonatan Madero
- * @version 1.0
+ * @version 2.0
  */
 public class LidCrazy extends Lid {
-    
+
+    /** Franja horizontal que cruza toda la tapa. */
+    private Rectangle stripe;
+    private int stripeX, stripeY;
+
     /**
-     * Constructor de LidCrazy
-     * @param number número de la tapa
-     * @param color color de la tapa
+     * Constructor de LidCrazy.
+     * @param number numero de la tapa
+     * @param color  color de la tapa
      */
     public LidCrazy(int number, String color) {
         super(number, color);
-        // Sobrescribimos la altura: en lugar de 1, es 0
         this.height = 0;
+        int widthPx = number * SCALE;
+        stripe = new Rectangle();
+        stripe.changeSize(3, widthPx);
+        stripe.changeColor("black");
+        stripeX = DEFAULT_X;
+        stripeY = DEFAULT_Y;
     }
-    
+
     /**
-     * Retorna el subtipo de esta tapa
-     * @return "crazy"
+     * Dibuja la tapa crazy con su franja horizontal al centro.
      */
     @Override
-    public String getSubtype() {
-        return "crazy";
+    public void draw(int towerCenterX, int towerBaseY, int yPositionCm) {
+        super.draw(towerCenterX, towerBaseY, yPositionCm);
+        int widthPx = number * SCALE;
+        int xLeft = towerCenterX - widthPx / 2;
+        int targetX = xLeft;
+        int targetY = towerBaseY - yPositionCm * SCALE - SCALE / 2;
+        moveTo(stripe, stripeX, stripeY, targetX, targetY);
+        stripeX = targetX;
+        stripeY = targetY;
+        stripe.makeVisible();
     }
-    
+
     /**
-     * Sobrescribimos getHeight() para retornar 0 en lugar de 1.
-     * Una tapa loca NO suma altura a la torre.
-     * 
-     * @return 0 (no suma altura)
+     * Oculta la tapa crazy y su franja.
      */
     @Override
-    public int getHeight() {
-        return 0;
+    public void erase() {
+        super.erase();
+        stripe.makeInvisible();
     }
+
+    @Override
+    public String getSubtype() { return "crazy"; }
+
+    @Override
+    public int getHeight() { return 0; }
 }
