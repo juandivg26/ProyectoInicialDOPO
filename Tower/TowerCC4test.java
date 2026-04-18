@@ -31,7 +31,7 @@ public class TowerCC4test {
         tower.pushCup(3);
         tower.pushLid(3);
         tower.pushCup(2);
-        tower.pushCup(4, "opener");
+        tower.pushCup("opener", 4);
         assertTrue(tower.ok());
         String[][] items = tower.stackingItems();
         int cupCount = 0;
@@ -47,7 +47,7 @@ public class TowerCC4test {
     @Test
     public void accordingMVShouldOpenerSucceedWithEmptyTower() {
         // CupOpener en torre sin tapas simplemente entra
-        tower.pushCup(3, "opener");
+        tower.pushCup("opener", 3);
         assertTrue(tower.ok());
         assertEquals(1, tower.stackingItems().length);
     }
@@ -56,7 +56,7 @@ public class TowerCC4test {
     public void accordingMVShouldNotAllowDuplicateCup() {
         // No se puede pushCup con un numero que ya existe
         tower.pushCup(3);
-        tower.pushCup(3, "opener");
+        tower.pushCup("opener", 3);
         assertFalse("No debe permitir dos tazas con el mismo numero", tower.ok());
     }
 
@@ -69,7 +69,7 @@ public class TowerCC4test {
         // CupHierarchical desplaza tazas menores hacia arriba
         tower.pushCup(2);
         tower.pushCup(1);
-        tower.pushCup(4, "hierarchical");
+        tower.pushCup("hierarchical", 4);
         assertTrue(tower.ok());
         String[][] items = tower.stackingItems();
         // Cup4 debe quedar debajo de Cup2 y Cup1
@@ -86,7 +86,7 @@ public class TowerCC4test {
         // CupHierarchical que llego al fondo es inamovible.
         // Cup3 hierarchical desplaza a Cup1 y queda en posicion 0 = fondo.
         tower.pushCup(1);
-        tower.pushCup(3, "hierarchical");
+        tower.pushCup("hierarchical", 3);
         assertTrue(tower.ok());
         tower.removeCup(3);
         assertFalse("CupHierarchical en el fondo no debe poder quitarse", tower.ok());
@@ -103,7 +103,7 @@ public class TowerCC4test {
         tower.pushCup(1);
         tower.pushCup(2);
         tower.pushCup(3);
-        tower.pushCup(4, "dominant");
+        tower.pushCup("dominant", 4);
         assertTrue(tower.ok());
         String[][] items = tower.stackingItems();
         for (String[] item : items) {
@@ -119,7 +119,7 @@ public class TowerCC4test {
         // CupDominant no elimina tazas del mismo numero (no puede existir igual)
         // Solo verifica que la operacion es exitosa
         tower.pushCup(5);
-        tower.pushCup(3, "dominant");
+        tower.pushCup("dominant", 3);
         assertTrue(tower.ok());
     }
 
@@ -131,11 +131,11 @@ public class TowerCC4test {
     public void accordingMVShouldFearfulEnterOnlyWithCompanionCup() {
         // LidFearful solo entra si su taza esta en la torre
         tower.pushCup(2);
-        tower.pushLid(3, "fearful"); // taza 3 no esta
+        tower.pushLid("fearful", 3); // taza 3 no esta
         assertFalse("LidFearful no debe entrar sin su taza", tower.ok());
 
         tower.pushCup(3);
-        tower.pushLid(3, "fearful"); // ahora si esta
+        tower.pushLid("fearful", 3); // ahora si esta
         assertTrue("LidFearful debe entrar con su taza presente", tower.ok());
     }
 
@@ -143,7 +143,7 @@ public class TowerCC4test {
     public void accordingMVShouldFearfulNotLeaveWhenProtecting() {
         // LidFearful tapando su taza no puede salir
         tower.pushCup(3);
-        tower.pushLid(3, "fearful");
+        tower.pushLid("fearful", 3);
         tower.popLid();
         assertFalse("LidFearful protegiendo no debe poder salir con popLid", tower.ok());
     }
@@ -153,7 +153,7 @@ public class TowerCC4test {
         // LidFearful que no esta sobre su taza si puede salir
         tower.pushCup(3);
         tower.pushCup(2);
-        tower.pushLid(3, "fearful"); // esta sobre Cup2, no sobre Cup3
+        tower.pushLid("fearful", 3); // esta sobre Cup2, no sobre Cup3
         tower.removeLid(3);
         assertTrue("LidFearful sin proteger debe poder quitarse", tower.ok());
     }
@@ -167,7 +167,7 @@ public class TowerCC4test {
         // LidCrazy va a la base, no a la cima
         tower.pushCup(3);
         tower.pushCup(2);
-        tower.pushLid(3, "crazy");
+        tower.pushLid("crazy", 3);
         assertTrue(tower.ok());
         String[][] items = tower.stackingItems();
         assertEquals("El primer elemento debe ser LidCrazy", "lid", items[0][0]);
@@ -178,15 +178,21 @@ public class TowerCC4test {
     public void accordingMVShouldMultipleCrazyStackInOrder() {
         // Varias LidCrazy se acumulan en la base en orden de llegada
         tower.pushCup(5);
-        tower.pushLid(5, "crazy");
+        tower.pushLid("crazy", 5);
         tower.pushCup(3);
-        tower.pushLid(3, "crazy");
+        tower.pushLid("crazy", 3);
         assertTrue(tower.ok());
         String[][] items = tower.stackingItems();
+        // Orden real: [LidCrazy5, Cup5, LidCrazy3, Cup3]
+        // Cada crazy va justo antes de su propia taza
         assertEquals("lid", items[0][0]);
-        assertEquals("lid", items[1][0]);
-        // Las tazas deben estar encima de las crazys
-        assertEquals("cup", items[2][0]);
+        assertEquals("5", items[0][1]);
+        assertEquals("cup", items[1][0]);
+        assertEquals("5", items[1][1]);
+        assertEquals("lid", items[2][0]);
+        assertEquals("3", items[2][1]);
+        assertEquals("cup", items[3][0]);
+        assertEquals("3", items[3][1]);
     }
 
     // =====================================================================
@@ -197,10 +203,10 @@ public class TowerCC4test {
     public void accordingMVShouldOpenerNotAffectCrazyLids() {
         // CupOpener solo elimina tapas normales/fearful, no las crazy de la base
         tower.pushCup(5);
-        tower.pushLid(5, "crazy");
+        tower.pushLid("crazy", 5);
         tower.pushCup(3);
         tower.pushLid(3);
-        tower.pushCup(4, "opener");
+        tower.pushCup("opener", 4);
         assertTrue(tower.ok());
         // La LidCrazy 5 debe seguir en la base
         String[][] items = tower.stackingItems();
