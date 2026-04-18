@@ -14,6 +14,13 @@ public class Triangle extends Shape {
     
     private int width;
     private int height;
+    private static Canvas canvas;
+    private static Canvas getSharedCanvas() {  
+        if (Triangle.canvas == null) {
+            Triangle.canvas = Canvas.getCanvas();
+        }
+        return Triangle.canvas;
+    }
     
     /**
      * Constructor de Triangle
@@ -76,16 +83,24 @@ public class Triangle extends Shape {
      * Mueve el triángulo horizontalmente
      */
     @Override
-    public void moveHorizontal(int distance) {
+    public void moveHorizontal(final int distance) {
         xPosition += distance;
+        if (this.isVisible) {
+            Canvas c = getSharedCanvas();
+            c.draw(this, this.color, this);
+        }
     }
     
     /**
      * Mueve el triángulo verticalmente
      */
     @Override
-    public void moveVertical(int distance) {
+    public void moveVertical(final int distance) {
         yPosition += distance;
+        if (this.isVisible) {
+            Canvas c = getSharedCanvas();
+            c.draw(this, this.color, this);
+        }
     }
     
     /**
@@ -93,6 +108,8 @@ public class Triangle extends Shape {
      */
     public void makeVisible() {
         isVisible = true;
+        final Canvas c = getSharedCanvas();
+        c.draw(this, this.color, this);
     }
     
     /**
@@ -100,6 +117,8 @@ public class Triangle extends Shape {
      */
     public void makeInvisible() {
         isVisible = false;
+        final Canvas c = getSharedCanvas();
+        c.erase(this);
     }
     
     /**
