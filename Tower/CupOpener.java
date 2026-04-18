@@ -2,22 +2,23 @@ package tower;
 
 import java.util.ArrayList;
 import shapes.Rectangle;
+import shapes.Circle;
 
 /**
  * CupOpener: taza especial que elimina todas las tapas que le impiden el paso.
  * Al entrar a la torre, elimina todas las tapas que se encuentran debajo de ella
  * (es decir, las que ya estaban en la torre antes de que ella llegara).
- * Se distingue visualmente por una franja horizontal negra cerca del borde superior.
+ * Se distingue visualmente por un círculo negro en el centro de la base.
  * Hereda de Cup.
  *
  * @author Juan Diego Valderrama Gaviria y Jhonatan Madero
- * @version 3.0
+ * @version 4.0
  */
 public class CupOpener extends Cup {
 
-    /** Franja visual cerca del borde superior de la taza. */
-    private Rectangle stripe;
-    private int stripeX, stripeY;
+    /** Círculo decorativo en el centro de la base */
+    private Circle circle;
+    private int circleX, circleY;
 
     /**
      * Constructor de CupOpener.
@@ -26,12 +27,13 @@ public class CupOpener extends Cup {
      */
     public CupOpener(int number, String color) {
         super(number, color);
-        int widthPx = number * SCALE - 2 * WALL;
-        stripe = new Rectangle();
-        stripe.changeSize(3, widthPx);
-        stripe.changeColor("black");
-        stripeX = DEFAULT_X;
-        stripeY = DEFAULT_Y;
+        
+        int size = SCALE - 8; 
+        circle = new Circle();
+        circle.changeDiameter(size);
+        circle.changeColor("black");
+        circleX = DEFAULT_X;
+        circleY = DEFAULT_Y;
     }
 
     /**
@@ -41,14 +43,19 @@ public class CupOpener extends Cup {
     public void draw(int towerCenterX, int towerBaseY, int yPositionCm) {
         super.draw(towerCenterX, towerBaseY, yPositionCm);
         int widthPx = number * SCALE;
-        int xLeft = towerCenterX - widthPx / 2 + WALL;
-        int heightPx = height * SCALE;
-        int targetX = xLeft;
-        int targetY = towerBaseY - yPositionCm * SCALE - heightPx + 2;
-        moveTo(stripe, stripeX, stripeY, targetX, targetY);
-        stripeX = targetX;
-        stripeY = targetY;
-        stripe.makeVisible();
+        int xLeft = towerCenterX - widthPx / 2;
+        int basePx = 1 * SCALE;
+        int targetBaseY = towerBaseY - yPositionCm * SCALE - basePx;
+        
+        // Círculo centrado en la base
+        int size = SCALE - 8;
+        int targetX = xLeft + (widthPx - size) / 2;
+        int targetY = targetBaseY + (basePx - size) / 2;
+        
+        moveCircle(circle, circleX, circleY, targetX, targetY);
+        circleX = targetX;
+        circleY = targetY;
+        circle.makeVisible();
     }
 
     /**
@@ -57,7 +64,7 @@ public class CupOpener extends Cup {
     @Override
     public void erase() {
         super.erase();
-        stripe.makeInvisible();
+        circle.makeInvisible();
     }
 
     /**
