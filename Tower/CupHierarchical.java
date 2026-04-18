@@ -2,27 +2,32 @@ package tower;
 
 import java.util.ArrayList;
 import shapes.Rectangle;
+import shapes.Circle;
 
 /**
  * CupHierarchical: taza especial jerarquica.
- * Al entrar a la torre va desplazando todos los objetos de menor tamanio hacia
+ * Al entrar a la torre va desplazando todos los objetos de menor tamaño hacia
  * arriba, insertandose en la posicion correcta segun su numero.
  * Si logra llegar al fondo de la torre (queda en la posicion mas baja), ya no
  * puede ser quitada.
- * Se distingue visualmente por una franja horizontal negra al centro de la taza.
+ * Se distingue visualmente por DOS círculos negros uno al lado del otro en la base.
  * Hereda de Cup.
  *
  * @author Juan Diego Valderrama Gaviria y Jhonatan Madero
- * @version 3.0
+ * @version 4.0
  */
 public class CupHierarchical extends Cup {
 
     /** Indica si esta taza llego al fondo de la torre. */
     private boolean reachedBottom;
 
-    /** Franja visual al centro de la taza. */
-    private Rectangle stripe;
-    private int stripeX, stripeY;
+    /** Círculo izquierdo */
+    private Circle circleLeft;
+    private int circleLeftX, circleLeftY;
+
+    /** Círculo derecho */
+    private Circle circleRight;
+    private int circleRightX, circleRightY;
 
     /**
      * Constructor de CupHierarchical.
@@ -32,13 +37,23 @@ public class CupHierarchical extends Cup {
     public CupHierarchical(int number, String color) {
         super(number, color);
         this.reachedBottom = false;
-        int widthPx = number * SCALE - 2 * WALL;
-        stripe = new Rectangle();
-        stripe.changeSize(3, widthPx);
-        stripe.changeColor("black");
-        stripeX = DEFAULT_X;
-        stripeY = DEFAULT_Y;
+        int size = SCALE - 8;
+        
+        // Círculo izquierdo
+        circleLeft = new Circle();
+        circleLeft.changeDiameter(size);
+        circleLeft.changeColor("black");
+        circleLeftX = DEFAULT_X;
+        circleLeftY = DEFAULT_Y;
+        
+        // Círculo derecho
+        circleRight = new Circle();
+        circleRight.changeDiameter(size);
+        circleRight.changeColor("black");
+        circleRightX = DEFAULT_X;
+        circleRightY = DEFAULT_Y;
     }
+    
 
     /**
      * Dibuja la taza hierarchical con su franja al centro.
@@ -47,14 +62,29 @@ public class CupHierarchical extends Cup {
     public void draw(int towerCenterX, int towerBaseY, int yPositionCm) {
         super.draw(towerCenterX, towerBaseY, yPositionCm);
         int widthPx = number * SCALE;
-        int xLeft = towerCenterX - widthPx / 2 + WALL;
-        int heightPx = height * SCALE;
-        int targetX = xLeft;
-        int targetY = towerBaseY - yPositionCm * SCALE - heightPx / 2 - 1;
-        moveTo(stripe, stripeX, stripeY, targetX, targetY);
-        stripeX = targetX;
-        stripeY = targetY;
-        stripe.makeVisible();
+        int xLeft = towerCenterX - widthPx / 2;
+        int basePx = 1 * SCALE;
+        int targetBaseY = towerBaseY - yPositionCm * SCALE - basePx;
+        
+        int size = SCALE - 8;
+        int spacing = 6;  // Espacio entre círculos
+        int totalWidth = size * 2 + spacing;
+        int startX = xLeft + (widthPx - totalWidth) / 2;
+        int targetY = targetBaseY + (basePx - size) / 2;
+        
+        // Círculo izquierdo
+        int targetLeftX = startX;
+        moveCircle(circleLeft, circleLeftX, circleLeftY, targetLeftX, targetY);
+        circleLeftX = targetLeftX;
+        circleLeftY = targetY;
+        circleLeft.makeVisible();
+        
+        // Círculo derecho
+        int targetRightX = startX + size + spacing;
+        moveCircle(circleRight, circleRightX, circleRightY, targetRightX, targetY);
+        circleRightX = targetRightX;
+        circleRightY = targetY;
+        circleRight.makeVisible();
     }
 
     /**
@@ -63,7 +93,8 @@ public class CupHierarchical extends Cup {
     @Override
     public void erase() {
         super.erase();
-        stripe.makeInvisible();
+        circleLeft.makeInvisible();
+        circleRight.makeInvisible();
     }
 
 
