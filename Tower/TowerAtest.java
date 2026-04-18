@@ -22,7 +22,7 @@ public class TowerAtest {
      * Espera el tiempo indicado.
      * @param ms milisegundos a esperar
      */
-    private void wait(int ms) {
+    private void pause(int ms) {
         try {
             Thread.sleep(ms);
         } catch (InterruptedException e) {
@@ -65,15 +65,15 @@ public class TowerAtest {
     public void acceptanceCupOpenerCleansAllLids() {
         Tower tower = new Tower(6, 50);
         tower.makeVisible();
-        wait(DELAY);
+        pause(DELAY);
 
         // Construir escenario con tazas tapadas
-        tower.pushCup(5);   wait(DELAY);
-        tower.pushLid(5);   wait(DELAY);
-        tower.pushCup(3);   wait(DELAY);
-        tower.pushLid(3);   wait(DELAY);
-        tower.pushCup(2);   wait(DELAY);
-        tower.pushLid(2);   wait(DELAY);
+        tower.pushCup(5);   pause(DELAY);
+        tower.pushLid(5);   pause(DELAY);
+        tower.pushCup(3);   pause(DELAY);
+        tower.pushLid(3);   pause(DELAY);
+        tower.pushCup(2);   pause(DELAY);
+        tower.pushLid(2);   pause(DELAY);
 
         JOptionPane.showMessageDialog(null,
             "Estado inicial: Torre con Cup5+Lid5, Cup3+Lid3, Cup2+Lid2.\n" +
@@ -81,8 +81,8 @@ public class TowerAtest {
             "Prueba de Aceptacion 1", JOptionPane.INFORMATION_MESSAGE);
 
         // Entra la CupOpener
-        tower.pushCup(4, "opener");
-        wait(DELAY);
+        tower.pushCup("opener", 4);
+        pause(DELAY);
 
         // Verificaciones logicas
         String[][] items = tower.stackingItems();
@@ -125,15 +125,15 @@ public class TowerAtest {
     public void acceptanceMixedTypesWorkCorrectlyTogether() {
         Tower tower = new Tower(6, 50);
         tower.makeVisible();
-        wait(DELAY);
+        pause(DELAY);
 
         // Paso 1: Cup5 entra normal
         tower.pushCup(5);
-        wait(DELAY);
+        pause(DELAY);
 
         // Paso 2: LidCrazy5 va a la base
-        tower.pushLid(5, "crazy");
-        wait(DELAY);
+        tower.pushLid("crazy", 5);
+        pause(DELAY);
 
         boolean crazyOk = askUser(
             "La LidCrazy 5 debe aparecer en la BASE de la torre (abajo del todo),\n" +
@@ -148,8 +148,8 @@ public class TowerAtest {
         assertEquals("5", afterCrazy[0][1]);
 
         // Paso 3: Cup3 entra, LidFearful3 la tapa
-        tower.pushCup(3);            wait(DELAY);
-        tower.pushLid(3, "fearful"); wait(DELAY);
+        tower.pushCup(3);            pause(DELAY);
+        tower.pushLid("fearful", 3); pause(DELAY);
 
         JOptionPane.showMessageDialog(null,
             "LidFearful 3 tapo a Cup3.\n" +
@@ -159,17 +159,17 @@ public class TowerAtest {
 
         tower.removeLid(3); // debe fallar
         assertFalse("LidFearful protegiendo no debe poder quitarse", tower.ok());
-        wait(DELAY);
+        pause(DELAY);
 
         // Paso 4: Cup1 entra, CupDominant4 elimina menores
-        tower.pushCup(1); wait(DELAY);
+        tower.pushCup(1); pause(DELAY);
 
         JOptionPane.showMessageDialog(null,
             "Cup1 entro a la torre.\n" +
             "Ahora entrara CupDominant 4 que eliminara Cup1 y Cup3 (son menores que 4).",
             "Prueba de Aceptacion 2", JOptionPane.INFORMATION_MESSAGE);
 
-        tower.pushCup(4, "dominant"); wait(DELAY);
+        tower.pushCup("dominant", 4); pause(DELAY);
         assertTrue("CupDominant debe entrar exitosamente", tower.ok());
 
         // Verificaciones logicas finales
@@ -202,4 +202,4 @@ public class TowerAtest {
         tower.makeInvisible();
         assertTrue("El usuario no acepto la prueba de tipos mixtos", accepted);
     }
-} 
+}
