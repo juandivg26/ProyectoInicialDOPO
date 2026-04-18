@@ -1,21 +1,19 @@
 package tower;
-
-import shapes.Rectangle;
+import shapes.Triangle;
 
 /**
  * LidCrazy: tapa especial loca.
- * En lugar de tapar su taza, se ubica de base (altura = 0).
- * Se distingue visualmente por una franja horizontal negra que ocupa todo su ancho interior.
+ * Se coloca DEBAJO de su taza (no en la base).
+ * Se distingue visualmente por un triángulo negro centrado.
  * Hereda de Lid.
  *
  * @author Juan Diego Valderrama Gaviria y Jhonatan Madero
- * @version 2.0
+ * @version 3.0 (Corregido: ahora va debajo de su taza)
  */
 public class LidCrazy extends Lid {
-
-    /** Franja horizontal que cruza toda la tapa. */
-    private Rectangle stripe;
-    private int stripeX, stripeY;
+    
+    private Triangle figura;
+    private int figuraX, figuraY;
 
     /**
      * Constructor de LidCrazy.
@@ -24,43 +22,59 @@ public class LidCrazy extends Lid {
      */
     public LidCrazy(int number, String color) {
         super(number, color);
-        this.height = 0;
-        int widthPx = number * SCALE;
-        stripe = new Rectangle();
-        stripe.changeSize(3, widthPx);
-        stripe.changeColor("black");
-        stripeX = DEFAULT_X;
-        stripeY = DEFAULT_Y;
+        this.height = 1;
+        
+        figura = new Triangle();
+        figura.changeSize(SCALE - 6, SCALE - 6);
+        figura.changeColor("black");
+        
+        figuraX = DEFAULT_X;
+        figuraY = DEFAULT_Y;
     }
 
     /**
-     * Dibuja la tapa crazy con su franja horizontal al centro.
+     * Dibuja la tapa crazy con su triángulo centrado.
+     * Se dibuja debajo de su taza, en la posición calculada.
      */
     @Override
     public void draw(int towerCenterX, int towerBaseY, int yPositionCm) {
-        super.draw(towerCenterX, towerBaseY, yPositionCm);
+        // Dibujar el rectángulo base de la tapa
         int widthPx = number * SCALE;
         int xLeft = towerCenterX - widthPx / 2;
+        
         int targetX = xLeft;
-        int targetY = towerBaseY - yPositionCm * SCALE - SCALE / 2;
-        moveTo(stripe, stripeX, stripeY, targetX, targetY);
-        stripeX = targetX;
-        stripeY = targetY;
-        stripe.makeVisible();
+        int targetY = towerBaseY - yPositionCm * SCALE - SCALE;
+        moveTo(base, baseX, baseY, targetX, targetY);
+        baseX = targetX;
+        baseY = targetY;
+        base.makeVisible();
+        
+        // Dibujar el triángulo decorativo centrado
+        int size = SCALE - 6;
+        int triX = xLeft + (widthPx - size) / 2;
+        int triY = targetY + (SCALE - size) / 2;
+        
+        moveTriangle(figura, figuraX, figuraY, triX, triY);
+        figuraX = triX;
+        figuraY = triY;
+        figura.makeVisible();
+        
+        drawn = true;
     }
 
-    /**
-     * Oculta la tapa crazy y su franja.
-     */
     @Override
     public void erase() {
         super.erase();
-        stripe.makeInvisible();
+        figura.makeInvisible();
     }
 
     @Override
-    public String getSubtype() { return "crazy"; }
+    public String getSubtype() { 
+        return "crazy"; 
+    }
 
     @Override
-    public int getHeight() { return 0; }
+    public int getHeight() { 
+        return 1;  
+    }
 }
