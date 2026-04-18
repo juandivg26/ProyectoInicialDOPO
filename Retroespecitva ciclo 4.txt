@@ -1,0 +1,33 @@
+Retroespecitva ciclo 4
+1. ¿Cuáles fueron los mini-ciclos definidos? Justifíquenlos.
+Ciclo 1 :Refactorización del paquete shapes con clase abstracta Shape (herencia real).
+Ciclo 2: Separación en paquetes shapes y tower (cohesión).
+Ciclo 3: Nuevos tipos de tazas — OpenerCup, HierarchicalCup.
+Ciclo 4: Nuevos tipos de tapas — FearfulLid, CrazyLid, StickyLid. 
+Ciclo 5: Pruebas TowerC4Test, TowerCC4Test, TowerATest.
+
+2. ¿Cuál es el estado actual del proyecto en términos de mini-ciclos?
+Ciclo 4 completado al 100%. Paquete shapes refactorizado, paquete tower con todos los tipos nuevos y pruebas unitarias, colectivas y de aceptación hechas
+
+3. ¿Cuál fue el tiempo total invertido por cada uno de ustedes?
+Aproximadamente 12 horas cada uno. 
+
+4. ¿Cuál consideran fue el mayor logro? ¿Por qué?
+El mayor logro del proyecto fue la correcta refactorización del sistema en el ciclo 4 para soportar múltiples subtipos de tazas y tapas mediante herencia y polimorfismo.porque aplica directamente los principios de orientación por objetos vistos en clase: abstracción, herencia, polimorfismo y el principio de abierto/cerrado
+
+5. ¿Cuál fue el mayor problema técnico? ¿Qué hicieron para resolverlo?
+El comportamiento de opener El mayor problema técnico del ciclo 4 fue la implementación correcta de CupOpener. El desafío consistió en determinar con precisión cuáles tapas "le impiden el paso" a la taza opener al entrar a la torre.
+Inicialmente el algoritmo recorría los índices en la dirección incorrecta, eliminando tapas que estaban por encima de la opener en lugar de las que estaban por debajo. La solución fue corregir el recorrido para ir de arriba hacia abajo en la lista
+
+6. ¿Qué hicieron bien como equipo? ¿Qué se comprometen a hacer para mejorar?
+Como equipo, lograron mantener una distribución equitativa del trabajo a lo largo de los cuatro ciclos, con una inversión de horas igual entre ambos integrantes. La comunicación para identificar y corregir errores fue efectiva, especialmente al revisar los fallos de las pruebas unitarias y corregirlos de forma sistemática.Como compromisos de mejora para futuros ciclos se identifican: planificar con mayor anticipació
+
+7. ¿Cuál práctica XP fue la más útil? ¿Por qué?
+
+La práctica XP más útil fue la programación en pareja. Al trabajar juntos sobre el mismo código, fue posible detectar errores conceptuales en tiempo real que de otra manera habrían pasado desapercibidos hasta las pruebas. 
+
+8. ¿Qué referencias usaron? ¿Cuál fue la más útil?
+•	Barker, J. (2005). Beginning Java Objects: From Concepts to Code (2nd ed.). Apress. — Referencia principal del curso. Fue la más útil para comprender los fundamentos de abstracción, herencia, polimorfismo y binding dinámico aplicados en el diseño de la jerarquía StackItem → Cup/Lid → subtipos.
+•	Oracle Corporation. (2024). Java SE 17 API Documentation. https://docs.oracle.com/en/java/docs/. — Consultada para la API de ArrayList, JOptionPane y Thread.sleep() usados en Tower y TowerAtest.
+•	Barnes, D. J., & Kölling, M. (2016). Objects First with Java: A Practical Introduction Using BlueJ (6th ed.). Pearson. — Consultada para el manejo de la herramienta BlueJ y buenas prácticas de construcción iterativa.
+
