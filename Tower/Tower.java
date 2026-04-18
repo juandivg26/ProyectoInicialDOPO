@@ -139,10 +139,10 @@ public class Tower {
         /**
      * Agrega una taza específica (con tipo) a la cima de la torre.
      * NUEVO MÉTODO CON SOBRECARGA
+     * @param cupType tipo de taza: "normal", "opener", "hierarchical" y "Dominant"
      * @param i numero de la taza
-     * @param cupType tipo de taza: "normal", "opener", "hierarchical"
      */
-    public void pushCup(int i, String cupType) {
+    public void pushCup(String cupType, int i) {
         cupType = cupType.toLowerCase();
         if (i <= 0) {
             lastOk = false;
@@ -184,8 +184,8 @@ public class Tower {
     }
     
     /**
-     * Elimina la taza de la cima (si la cima es una taza).
-     * Si la taza esta tapada, elimina tambien la tapa.
+     * Elimina la taza de la cima (si la cima es una taza),
+     * junto con todo lo que contiene dentro y su tapa si la tiene.
      */
     public void popCup() {
         if (items.isEmpty()) {
@@ -200,19 +200,19 @@ public class Tower {
             return;
         }
         int idx = items.size() - 1;
-        if (isCupCovered(idx)) {
-            items.get(idx + 1).erase();
-            items.remove(idx + 1);
+        ArrayList<Integer> toRemove = getContentsOf(idx);
+        for (int k = toRemove.size() - 1; k >= 0; k--) {
+            int removeIdx = toRemove.get(k);
+            items.get(removeIdx).erase();
+            items.remove(removeIdx);
         }
-        top.erase();
-        items.remove(idx);
         lastOk = true;
         redraw();
     }
     
     /**
-     * Elimina la taza i de cualquier posicion en la torre.
-     * Si la taza esta tapada, elimina tambien la tapa ya que forman un solo objeto.
+     * Elimina la taza i de cualquier posicion en la torre,
+     * junto con su tapa (si la tiene) y todos los elementos contenidos dentro de ella.
      * @param i numero de la taza a eliminar
      */
     public void removeCup(int i) {
@@ -222,7 +222,6 @@ public class Tower {
             showError("La taza " + i + " no esta en la torre.");
             return;
         }
-        // CupHierarchical que llego al fondo no puede quitarse
         StackItem cup = items.get(idx);
         if (cup.getSubtype().equals("hierarchical")) {
             CupHierarchical h = (CupHierarchical) cup;
@@ -232,14 +231,38 @@ public class Tower {
                 return;
             }
         }
-        if (isCupCovered(idx)) {
-            items.get(idx + 1).erase();
-            items.remove(idx + 1);
+        ArrayList<Integer> toRemove = getContentsOf(idx);
+        for (int k = toRemove.size() - 1; k >= 0; k--) {
+            int removeIdx = toRemove.get(k);
+            items.get(removeIdx).erase();
+            items.remove(removeIdx);
         }
-        items.get(idx).erase();
-        items.remove(idx);
         lastOk = true;
         redraw();
+    }
+
+    /**
+     * Retorna los indices de todos los elementos que forman el bloque
+     * de la taza en idx: la taza misma, todo lo contenido dentro,
+     * y su tapa si la tiene.
+     * @param idx indice de la taza contenedora en items
+     * @return lista de indices a eliminar en orden ascendente
+     */
+    private ArrayList<Integer> getContentsOf(int idx) {
+        ArrayList<Integer> result = new ArrayList<Integer>();
+        result.add(idx);
+        int cupNum = items.get(idx).getNumber();
+        int j = idx + 1;
+        while (j < items.size()) {
+            StackItem si = items.get(j);
+            // Una taza de numero >= cupNum cierra el contenedor
+            if (si.getType().equals("cup") && si.getNumber() >= cupNum) {
+                break;
+            }
+            result.add(j);
+            j++;
+        }
+        return result;
     }
     
     // TAPAS
@@ -277,7 +300,7 @@ public class Tower {
      * @param i numero de la tapa
      * @param lidType tipo de tapa: "normal", "fearful", "crazy"
      */
-    public void pushLid(int i, String lidType) {
+    public void pushLid(String lidType, int i) {
         lidType = lidType.toLowerCase();
         if (i <= 0) {
             lastOk = false;
@@ -292,7 +315,7 @@ public class Tower {
         int lidHeight = 1;
         
         if (lidType.equals("crazy")) {
-            lidHeight = 0;
+            lidHeight = 1;
         }
         
         if (i > width || computeHeight() + lidHeight > maxHeight) {
@@ -304,7 +327,7 @@ public class Tower {
         // LidFearful no entra si su taza companiera no esta en la torre
         if (lidType.equals("fearful") && !existsItem("cup", i)) {
             lastOk = false;
-            showError("La tapa fearful " + i + " no puede entrar: su taza companiera no esta en la torre.");
+            showError("La tapa fearful " + i + " no puede entrar: su taza compañera no esta en la torre.");
             return;
         }
 
@@ -324,12 +347,14 @@ public class Tower {
 
         // LidCrazy va al fondo de la torre, despues de las otras crazys existentes
         if (lidType.equals("crazy")) {
-            int insertPos = 0;
-            while (insertPos < items.size()
-                   && items.get(insertPos).getSubtype().equals("crazy")) {
-                insertPos++;
+            int cupIdx = findItem("cup", i);
+            if (cupIdx != -1) {
+                // Insertar justo antes de su taza (debajo de ella)
+                items.add(cupIdx, lid);
+            } else {
+                // Si por alguna razón la taza no existe, va al final
+                items.add(lid);
             }
-            items.add(insertPos, lid);
         } else {
             items.add(lid);
         }
@@ -382,14 +407,12 @@ public class Tower {
         }
         
         StackItem lid = items.get(idx);
-        if (lid.getType().equals("lid")) {
-            if (lid.getSubtype().equals("fearful")) {
-                LidFearful fearful = (LidFearful) lid;
-                if (fearful.isProtecting()) {
-                    lastOk = false;
-                    showError("La tapa " + i + " esta protegiendo su taza y no puede removerse.");
-                    return;
-                }
+        if (lid.getSubtype().equals("fearful")) {
+            LidFearful fearful = (LidFearful) lid;
+            if (fearful.isProtecting()) {
+                lastOk = false;
+                showError("La tapa fearful " + i + " esta protegiendo su taza y no puede removerse.");
+                return;
             }
         }
         
@@ -609,6 +632,7 @@ public class Tower {
             
             items.add(cupIdx + 1, lid);
         }
+        updateFearfulProtectionStatus();
         
         lastOk = true;
         redraw();
@@ -744,51 +768,21 @@ public class Tower {
     //METODOS PRIVADOS
     
     /**
-     * Calcula la altura real de la torre considerando el anidado de tazas.
+     * Calcula la altura real de la torre usando la misma logica que computePositions.
      */
     private int computeHeight() {
         if (items.isEmpty()) return 0;
 
-        int[] containerTop = new int[items.size()];
-        int[] containerNumber = new int[items.size()];
-        int stackSize = 0;
-
-        int towerTop = 0;
-        int currentBase = 0;
-
+        // Usa exactamente la misma logica que computePositions
+        // para garantizar consistencia entre altura calculada y visual
+        int[] positions = computePositions();
+        int maxTop = 0;
         for (int i = 0; i < items.size(); i++) {
             StackItem si = items.get(i);
-
-            if (si.getType().equals("cup")) {
-                int cupNum = si.getNumber();
-                int cupHeight = si.getHeight();
-
-                while (stackSize > 0 && containerNumber[stackSize - 1] <= cupNum) {
-                    stackSize--;
-                }
-
-                if (stackSize > 0) {
-                    currentBase = containerTop[stackSize - 1] - (2 * containerNumber[stackSize - 1] - 1) + 1;
-                } else {
-                    currentBase = towerTop;
-                }
-
-                int cupTop = currentBase + cupHeight;
-                if (cupTop > towerTop) towerTop = cupTop;
-
-                containerNumber[stackSize] = cupNum;
-                containerTop[stackSize] = cupTop;
-                stackSize++;
-
-            } else {
-                // LidCrazy tiene height=0 pero ocupa 1 cm visual en la base
-                int lidHeight = si.getSubtype().equals("crazy") ? 1 : si.getHeight();
-                int lidTop = towerTop + lidHeight;
-                if (lidTop > towerTop) towerTop = lidTop;
-            }
+            int top = positions[i] + si.getHeight();
+            if (top > maxTop) maxTop = top;
         }
-
-        return towerTop;
+        return maxTop;
     }
     
     /**
@@ -1110,12 +1104,11 @@ public class Tower {
         drawFrame();
         
         updateCoveredStatus();
+        updateFearfulProtectionStatus();
         
         int[] positions = computePositions();
-
-        // Dibujar en orden de tamaño ascendente:
-        // tapas y tazas pequeñas primero, tazas grandes al final.
-        // Asi las paredes de las contenedoras quedan encima en el canvas.
+    
+        // CORREGIDO: Dibujar en orden DESCENDENTE (grandes primero, pequeñas después)
         int[] drawOrder = new int[items.size()];
         for (int i = 0; i < items.size(); i++) drawOrder[i] = i;
         for (int a = 0; a < drawOrder.length - 1; a++) {
@@ -1124,7 +1117,8 @@ public class Tower {
                 StackItem sb = items.get(drawOrder[b + 1]);
                 int sizeA = sa.getType().equals("cup") ? sa.getNumber() : 0;
                 int sizeB = sb.getType().equals("cup") ? sb.getNumber() : 0;
-                if (sizeA > sizeB) {
+                // Cambiado: ordenar de MAYOR a MENOR (sizeA < sizeB intercambia)
+                if (sizeA < sizeB) {
                     int tmp = drawOrder[b];
                     drawOrder[b] = drawOrder[b + 1];
                     drawOrder[b + 1] = tmp;
@@ -1143,77 +1137,105 @@ public class Tower {
         int[] positions = new int[items.size()];
         if (items.isEmpty()) return positions;
 
-        int[] stackIdx = new int[items.size()];
+        // stackNum[k]  = numero del contenedor en nivel k de la pila
+        // stackFree[k] = siguiente posicion Y libre dentro del contenedor k
+        int[] stackNum  = new int[items.size()];
+        int[] stackFree = new int[items.size()];
         int stackSize = 0;
+        int globalTop = 0; // tope absoluto para elementos sin contenedor
 
-        // LidCrazy ocupa la base. Cada una ocupa 1 cm visual.
-        // Se asignan posiciones 0, 1, 2... segun cuantas haya.
-        int towerTop = 0;
-        int crazyCount = 0;
-        for (int i = 0; i < items.size(); i++) {
-            if (items.get(i).getSubtype().equals("crazy")) {
-                positions[i] = crazyCount;
-                crazyCount++;
-            }
-        }
-        towerTop = crazyCount; // las demas cosas arrancan desde aqui
-
+        // PASO 1: posicionar tazas
         for (int i = 0; i < items.size(); i++) {
             StackItem si = items.get(i);
+            if (!si.getType().equals("cup")) continue;
 
-            // LidCrazy ya fue posicionada arriba, saltar
-            if (si.getSubtype().equals("crazy")) continue;
+            int cupNum    = si.getNumber();
+            int cupHeight = si.getHeight();
 
-            if (si.getType().equals("cup")) {
-                int cupNum = si.getNumber();
+            // Desapilar contenedores menores o iguales al que llega
+            while (stackSize > 0 && stackNum[stackSize - 1] <= cupNum) {
+                stackSize--;
+            }
 
-                while (stackSize > 0) {
-                    int topIdx = stackIdx[stackSize - 1];
-                    if (items.get(topIdx).getNumber() <= cupNum) {
-                        stackSize--;
-                    } else {
-                        break;
-                    }
-                }
-
-                if (stackSize > 0) {
-                    int contIdx = stackIdx[stackSize - 1];
-                    positions[i] = positions[contIdx] + 1;
-                } else {
-                    positions[i] = towerTop;
-                }
-
-                int myTop = positions[i] + si.getHeight();
-                if (myTop > towerTop) towerTop = myTop;
-
-                stackIdx[stackSize] = i;
-                stackSize++;
-
+            int base;
+            if (stackSize > 0) {
+                // Entra dentro del contenedor: base = siguiente libre en ese nivel
+                base = stackFree[stackSize - 1];
             } else {
-                int lidNum = si.getNumber();
+                // Sin contenedor: va encima del tope global
+                base = globalTop;
+            }
 
-                boolean esTapaDeContenedora = (stackSize > 0)
-                    && items.get(stackIdx[stackSize - 1]).getNumber() == lidNum;
+            // Si hay una LidCrazy de esta taza justo antes, dejar espacio de 1 cm debajo
+            if (i > 0) {
+                StackItem prev = items.get(i - 1);
+                if (prev.getType().equals("lid") && prev.getSubtype().equals("crazy")
+                        && prev.getNumber() == cupNum) {
+                    base += 1;
+                }
+            }
 
-                if (esTapaDeContenedora) {
-                    int contIdx = stackIdx[stackSize - 1];
-                    positions[i] = positions[contIdx] + items.get(contIdx).getHeight();
-                    int lidTop = positions[i] + si.getHeight();
-                    if (lidTop > towerTop) towerTop = lidTop;
-                    stackSize--;
-                } else if ((i > 0)
-                    && items.get(i - 1).getType().equals("cup")
-                    && items.get(i - 1).getNumber() == lidNum) {
-                    positions[i] = positions[i - 1] + items.get(i - 1).getHeight();
-                    int lidTop = positions[i] + si.getHeight();
-                    if (lidTop > towerTop) towerTop = lidTop;
+            positions[i] = base;
+            int cupTop = base + cupHeight;
+            if (cupTop > globalTop) globalTop = cupTop;
+
+            // Actualizar la siguiente posicion libre en el contenedor padre
+            if (stackSize > 0 && cupTop > stackFree[stackSize - 1]) {
+                stackFree[stackSize - 1] = cupTop;
+            }
+
+            // Empujar esta taza como nuevo contenedor
+            stackNum[stackSize]  = cupNum;
+            stackFree[stackSize] = base + 1; // base interna (fondo = 1 cm)
+            stackSize++;
+        }
+
+        // PASO 2: posicionar tapas
+        for (int i = 0; i < items.size(); i++) {
+            StackItem si = items.get(i);
+            if (si.getType().equals("cup")) continue;
+
+            int lidNum = si.getNumber();
+            int cupIdx = findItem("cup", lidNum);
+
+            if (si.getSubtype().equals("crazy")) {
+                // LidCrazy ocupa el cm justo debajo de su taza
+                // positions[cupIdx] ya incluye el +1 del fix, entonces la crazy va en cupIdx - 1
+                positions[i] = (cupIdx != -1) ? positions[cupIdx] - 1 : 0;
+            } else {
+                // Lid normal o fearful: va justo encima de su taza compañera
+                if (cupIdx != -1) {
+                    positions[i] = positions[cupIdx] + items.get(cupIdx).getHeight();
                 } else {
-                    positions[i] = towerTop;
-                    towerTop += si.getHeight();
+                    positions[i] = globalTop;
+                    globalTop += si.getHeight();
                 }
             }
         }
 
         return positions;
+    }
+ 
+    /**
+     * Actualiza el estado de protección de todas las LidFearful.
+     * Una LidFearful está protegiendo si está JUSTO ENCIMA de su taza.
+     */
+    private void updateFearfulProtectionStatus() {
+        for (int i = 0; i < items.size(); i++) {
+            StackItem si = items.get(i);
+            if (si.getType().equals("lid") && si.getSubtype().equals("fearful")) {
+                LidFearful fearful = (LidFearful) si;
+                boolean isProtecting = false;
+                
+                if (i > 0) {
+                    StackItem below = items.get(i - 1);
+                    if (below.getType().equals("cup") && below.getNumber() == fearful.getNumber()) {
+                        isProtecting = true;
+                    }
+                }
+                
+                fearful.setProtecting(isProtecting);
+            }
+        }
     }
 }
