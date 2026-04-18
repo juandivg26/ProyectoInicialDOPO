@@ -1,6 +1,7 @@
 package tower;
 
 import shapes.Rectangle;
+import shapes.Triangle;
 
 /**
  * Una tapa de la torre. Es un rectangulo solido.
