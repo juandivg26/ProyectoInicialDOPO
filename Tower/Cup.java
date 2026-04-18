@@ -19,6 +19,7 @@ public abstract class Cup extends StackItem {
     
     protected Rectangle wallLeft;
     protected Rectangle wallRight;
+
     
     protected int leftX;
     protected int leftY;
