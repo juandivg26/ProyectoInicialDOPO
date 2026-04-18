@@ -1,6 +1,8 @@
 package tower;
  
 import shapes.Rectangle;
+import shapes.Circle;
+import shapes.Triangle;
 
 /**
  * Un elemento de la torre. Puede ser una taza (Cup) o una tapa (Lid).
@@ -134,6 +136,49 @@ public abstract class StackItem {
         }
         if (dy != 0) {
             rect.moveVertical(dy);
+        }
+    }
+    /**
+     * Mueve un circulo desde su posicion actual a una nueva.
+     * Calcula la diferencia entre posicion actual y destino
+     * y mueve el circulo esa distancia.
+     * @param circ el circulo a mover
+     * @param currentX posicion X actual
+     * @param currentY posicion Y actual
+     * @param targetX posicion X destino
+     * @param targetY posicion Y destino
+     */
+    protected void moveCircle(Circle circ, int currentX, int currentY,
+                              int targetX, int targetY) {
+        int dx = targetX - currentX;
+        int dy = targetY - currentY;
+        if (dx != 0) {
+            circ.moveHorizontal(dx);
+        }
+        if (dy != 0) {
+            circ.moveVertical(dy);
+        }
+    }
+    
+    /**
+     * Mueve un triangulo desde su posicion actual a una nueva.
+     * Calcula la diferencia entre posicion actual y destino
+     * y mueve el triangulo esa distancia.
+     * @param tri el triangulo a mover
+     * @param currentX posicion X actual
+     * @param currentY posicion Y actual
+     * @param targetX posicion X destino
+     * @param targetY posicion Y destino
+     */
+    protected void moveTriangle(Triangle tri, int currentX, int currentY,
+                                int targetX, int targetY) {
+        int dx = targetX - currentX;
+        int dy = targetY - currentY;
+        if (dx != 0) {
+            tri.moveHorizontal(dx);
+        }
+        if (dy != 0) {
+            tri.moveVertical(dy);
         }
     }
 }
