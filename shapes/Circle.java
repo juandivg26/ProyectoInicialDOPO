@@ -12,6 +12,13 @@ import java.awt.Color;
 public class Circle extends Shape {
     
     private int diameter;
+    private static Canvas canvas;
+    private static Canvas getSharedCanvas() {  
+        if (Circle.canvas == null) {
+            Circle.canvas = Canvas.getCanvas();
+        }
+        return Circle.canvas;
+    }
     
     /**
      * Constructor de Circle
@@ -77,6 +84,8 @@ public class Circle extends Shape {
      */
     public void makeVisible() {
         isVisible = true;
+        Canvas c = getSharedCanvas();
+        c.draw(this, color, this);
     }
     
     /**
@@ -84,6 +93,8 @@ public class Circle extends Shape {
      */
     public void makeInvisible() {
         isVisible = false;
+        Canvas c = getSharedCanvas();
+        c.draw(this, color, this);
     }
     
     /**
