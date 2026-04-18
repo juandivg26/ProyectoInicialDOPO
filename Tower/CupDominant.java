@@ -1,28 +1,33 @@
 package tower;
-
 import java.util.ArrayList;
 import shapes.Rectangle;
+import shapes.Circle;
+import shapes.Triangle;
 
 /**
  * CupDominant: taza especial dominante.
  * Al entrar a la torre se inserta en su posicion jerarquica correcta
  * (como CupHierarchical) y ademas elimina todas las tazas mas pequenas
  * que ya estaban dentro de ella.
- * Se distingue visualmente por dos franjas horizontales negras (arriba y abajo).
+ * Se distingue visualmente por: CÍRCULO - TRIÁNGULO - CÍRCULO en la base.
  * Hereda de Cup.
  *
  * @author Juan Diego Valderrama Gaviria y Jhonatan Madero
- * @version 2.0
+ * @version 4.0
  */
 public class CupDominant extends Cup {
 
-    /** Franja superior. */
-    private Rectangle stripeTop;
-    private int stripeTopX, stripeTopY;
+    /** Círculo izquierdo */
+    private Circle circleLeft;
+    private int circleLeftX, circleLeftY;
 
-    /** Franja inferior. */
-    private Rectangle stripeBot;
-    private int stripeBotX, stripeBotY;
+    /** Triángulo central */
+    private Triangle triangle;
+    private int triangleX, triangleY;
+
+    /** Círculo derecho */
+    private Circle circleRight;
+    private int circleRightX, circleRightY;
 
     /**
      * Constructor de CupDominant.
@@ -31,18 +36,28 @@ public class CupDominant extends Cup {
      */
     public CupDominant(int number, String color) {
         super(number, color);
-        int widthPx = number * SCALE - 2 * WALL;
-        stripeTop = new Rectangle();
-        stripeTop.changeSize(3, widthPx);
-        stripeTop.changeColor("black");
-        stripeTopX = DEFAULT_X;
-        stripeTopY = DEFAULT_Y;
-
-        stripeBot = new Rectangle();
-        stripeBot.changeSize(3, widthPx);
-        stripeBot.changeColor("black");
-        stripeBotX = DEFAULT_X;
-        stripeBotY = DEFAULT_Y;
+        int size = SCALE - 8;
+        
+        // Círculo izquierdo
+        circleLeft = new Circle();
+        circleLeft.changeDiameter(size);
+        circleLeft.changeColor("black");
+        circleLeftX = DEFAULT_X;
+        circleLeftY = DEFAULT_Y;
+        
+        // Triángulo central
+        triangle = new Triangle();
+        triangle.changeSize(size, size);
+        triangle.changeColor("black");
+        triangleX = DEFAULT_X;
+        triangleY = DEFAULT_Y;
+        
+        // Círculo derecho
+        circleRight = new Circle();
+        circleRight.changeDiameter(size);
+        circleRight.changeColor("black");
+        circleRightX = DEFAULT_X;
+        circleRightY = DEFAULT_Y;
     }
 
     /**
@@ -52,22 +67,36 @@ public class CupDominant extends Cup {
     public void draw(int towerCenterX, int towerBaseY, int yPositionCm) {
         super.draw(towerCenterX, towerBaseY, yPositionCm);
         int widthPx = number * SCALE;
-        int xLeft = towerCenterX - widthPx / 2 + WALL;
-        int heightPx = height * SCALE;
-
-        int targetTopX = xLeft;
-        int targetTopY = towerBaseY - yPositionCm * SCALE - heightPx + 2;
-        moveTo(stripeTop, stripeTopX, stripeTopY, targetTopX, targetTopY);
-        stripeTopX = targetTopX;
-        stripeTopY = targetTopY;
-        stripeTop.makeVisible();
-
-        int targetBotX = xLeft;
-        int targetBotY = towerBaseY - yPositionCm * SCALE - SCALE - 3;
-        moveTo(stripeBot, stripeBotX, stripeBotY, targetBotX, targetBotY);
-        stripeBotX = targetBotX;
-        stripeBotY = targetBotY;
-        stripeBot.makeVisible();
+        int xLeft = towerCenterX - widthPx / 2;
+        int basePx = 1 * SCALE;
+        int targetBaseY = towerBaseY - yPositionCm * SCALE - basePx;
+        
+        int size = SCALE - 8;
+        int spacing = 4;  // Espacio entre figuras
+        int totalWidth = size * 3 + spacing * 2;  // 3 figuras, 2 espacios
+        int startX = xLeft + (widthPx - totalWidth) / 2;
+        int targetY = targetBaseY + (basePx - size) / 2;
+        
+        // Círculo izquierdo
+        int targetLeftX = startX;
+        moveCircle(circleLeft, circleLeftX, circleLeftY, targetLeftX, targetY);
+        circleLeftX = targetLeftX;
+        circleLeftY = targetY;
+        circleLeft.makeVisible();
+        
+        // Triángulo central
+        int targetTriX = startX + size + spacing;
+        moveTriangle(triangle, triangleX, triangleY, targetTriX, targetY);
+        triangleX = targetTriX;
+        triangleY = targetY;
+        triangle.makeVisible();
+        
+        // Círculo derecho
+        int targetRightX = startX + (size + spacing) * 2;
+        moveCircle(circleRight, circleRightX, circleRightY, targetRightX, targetY);
+        circleRightX = targetRightX;
+        circleRightY = targetY;
+        circleRight.makeVisible();
     }
 
     /**
@@ -76,8 +105,9 @@ public class CupDominant extends Cup {
     @Override
     public void erase() {
         super.erase();
-        stripeTop.makeInvisible();
-        stripeBot.makeInvisible();
+        circleLeft.makeInvisible();
+        triangle.makeInvisible();
+        circleRight.makeInvisible();
     }
 
     /**
