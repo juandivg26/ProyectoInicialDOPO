@@ -1,0 +1,31 @@
+Retroespectiva ciclo FINAL
+
+repositorio :https://github.com/juandivg26/ProyectoInicialDOPO.git
+
+1. ¿Cuáles fueron los mini-ciclos definidos? Justifíquenlos.
+
+Ciclo 1: correcion de ciclos anteriores(lógica y visual)
+Ciclo 2: Reorganizar herramientas (astah)
+Ciclo 3: DE BlueJ a Eclipse (entender el funcionamiento de la IDE de Eclipse para pasar nuestro proyecto) + informes
+
+2. ¿Cuál es el estado actual del proyecto en términos de mini-ciclos? ¿Por qué?
+es completo ya que creemos que nos funciona bien la lógica y bastante de la parte visual pero puedes ocurrir algunos fallos visuales 
+
+
+3.¿Cuál fue el tiempo total invertido por cada uno de ustedes? (Horas/Hombre)
+El tiempo invertido fue de 15 horas para cada uno 
+
+4. ¿Cuál consideran fue el mayor logro? ¿Por qué?
+Nuestro mayor logro fue completar y lograr el objetivo de corregir errores y entender el funcionamiento de eclipse ya que es una nueva herramienta para nosotros y vemos que es mucho mejor y mas practico 
+
+5. ¿Cuál consideran que fue el mayor problema técnico? ¿Qué hicieron para resolverlo?
+Nuestro problema técnico fue la corrección visual ya que teníamos la lógica bien pero nuestro problema fue que para dibujar lo hacia mal  
+
+6. ¿Qué hicieron bien como equipo? ¿Qué se comprometen a hacer para mejorar los resultados?
+Lo que hicimos bien en equipo fue repartirnos el trabajo y encontrarnos para hacer el proyecto en huecos de la u
+
+7. Considerando las prácticas XP incluidas en los laboratorios. ¿Cuál fue la más útil? ¿por qué?
+La práctica que consideramo mas util fue pair programing ya que haciendo los códigos y los test mientras uno programaba el otro se percataba de lo errores y iba proponiendo mas ideas para el codigo 
+
+8. ¿Qué referencias usaron? ¿Cuál fue la más útil? Incluyan citas con estándares adecuados.
+Las referencias que usamos fueron la API de java para consultar funciones y librerías, también utilizamos una ia para completar algunas documentaciones de ciertos métodos, también los links que nos dieron en el laboratorio para hacer los informes 
