@@ -1,0 +1,10 @@
+#BlueJ class context
+comment0.target=CupNormal
+comment0.text=\r\n\ CupNormal\:\ taza\ est\u00E1ndar\ de\ la\ torre.\r\n\ Tiene\ comportamiento\ normal\:\ cabe\ dentro\ de\ otras\ tazas\ m\u00E1s\ grandes.\r\n\ Hereda\ de\ Cup.\r\n\ \r\n\ @author\ Juan\ Diego\ Valderrama\ Gaviria\ y\ Jhonatan\ Madero\r\n\ @version\ 1.0\r\n
+comment1.params=number\ color
+comment1.target=CupNormal(int,\ java.lang.String)
+comment1.text=\r\n\ Constructor\ de\ CupNormal\r\n\ @param\ number\ n\u00FAmero\ de\ la\ taza\r\n\ @param\ color\ color\ de\ la\ taza\r\n
+comment2.params=
+comment2.target=java.lang.String\ getSubtype()
+comment2.text=\r\n\ Retorna\ el\ subtipo\ de\ esta\ taza\r\n\ @return\ "normal"\r\n
+numComments=3

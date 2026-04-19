@@ -1,0 +1,19 @@
+#BlueJ class context
+comment0.target=CupOpener
+comment0.text=\r\n\ CupOpener\:\ taza\ especial\ que\ elimina\ todas\ las\ tapas\ que\ le\ impiden\ el\ paso.\r\n\ Al\ entrar\ a\ la\ torre,\ elimina\ todas\ las\ tapas\ que\ se\ encuentran\ debajo\ de\ ella\r\n\ (es\ decir,\ las\ que\ ya\ estaban\ en\ la\ torre\ antes\ de\ que\ ella\ llegara).\r\n\ Se\ distingue\ visualmente\ por\ un\ c\u00EDrculo\ negro\ en\ el\ centro\ de\ la\ base.\r\n\ Hereda\ de\ Cup.\r\n\r\n\ @author\ Juan\ Diego\ Valderrama\ Gaviria\ y\ Jhonatan\ Madero\r\n\ @version\ 4.0\r\n
+comment1.params=number\ color
+comment1.target=CupOpener(int,\ java.lang.String)
+comment1.text=\r\n\ Constructor\ de\ CupOpener.\r\n\ @param\ number\ numero\ de\ la\ taza\r\n\ @param\ color\ \ color\ de\ la\ taza\r\n
+comment2.params=towerCenterX\ towerBaseY\ yPositionCm
+comment2.target=void\ draw(int,\ int,\ int)
+comment2.text=\r\n\ Dibuja\ la\ taza\ opener\ con\ su\ franja\ identificadora\ cerca\ del\ borde\ superior.\r\n
+comment3.params=
+comment3.target=void\ erase()
+comment3.text=\r\n\ Oculta\ la\ taza\ opener\ y\ su\ franja.\r\n
+comment4.params=
+comment4.target=java.lang.String\ getSubtype()
+comment4.text=\r\n\ Retorna\ el\ subtipo\ de\ esta\ taza.\r\n\ @return\ "opener"\r\n
+comment5.params=items\ openerIndex
+comment5.target=void\ eliminateBlockingLids(java.util.ArrayList,\ int)
+comment5.text=\r\n\ Elimina\ todas\ las\ tapas\ que\ estan\ en\ la\ torre\ antes\ de\ que\ esta\ taza\ entre,\r\n\ es\ decir,\ las\ tapas\ que\ le\ impedian\ el\ paso.\r\n\ Se\ recorre\ la\ lista\ de\ atras\ hacia\ adelante\ para\ no\ alterar\ los\ indices\r\n\ mientras\ se\ eliminan\ elementos.\r\n\r\n\ @param\ items\ \ \ \ \ \ \ \ lista\ de\ elementos\ en\ la\ torre\r\n\ @param\ openerIndex\ \ indice\ donde\ fue\ insertada\ esta\ taza\ (exclusive)\:\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ solo\ se\ eliminan\ tapas\ con\ indice\ menor\ a\ este\ valor\r\n
+numComments=6

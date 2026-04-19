@@ -1,0 +1,19 @@
+#BlueJ class context
+comment0.target=CupDominant
+comment0.text=\r\n\ CupDominant\:\ taza\ especial\ dominante.\r\n\ Al\ entrar\ a\ la\ torre\ se\ inserta\ en\ su\ posicion\ jerarquica\ correcta\r\n\ (como\ CupHierarchical)\ y\ ademas\ elimina\ todas\ las\ tazas\ mas\ pequenas\r\n\ que\ ya\ estaban\ dentro\ de\ ella.\r\n\ Se\ distingue\ visualmente\ por\:\ C\u00CDRCULO\ -\ TRI\u00C1NGULO\ -\ C\u00CDRCULO\ en\ la\ base.\r\n\ Hereda\ de\ Cup.\r\n\r\n\ @author\ Juan\ Diego\ Valderrama\ Gaviria\ y\ Jhonatan\ Madero\r\n\ @version\ 4.0\r\n
+comment1.params=number\ color
+comment1.target=CupDominant(int,\ java.lang.String)
+comment1.text=\r\n\ Constructor\ de\ CupDominant.\r\n\ @param\ number\ numero\ de\ la\ taza\r\n\ @param\ color\ \ color\ de\ la\ taza\r\n
+comment2.params=towerCenterX\ towerBaseY\ yPositionCm
+comment2.target=void\ draw(int,\ int,\ int)
+comment2.text=\r\n\ Dibuja\ la\ taza\ dominant\ con\ dos\ franjas\:\ una\ arriba\ y\ una\ abajo.\r\n
+comment3.params=
+comment3.target=void\ erase()
+comment3.text=\r\n\ Oculta\ la\ taza\ dominant\ y\ sus\ dos\ franjas.\r\n
+comment4.params=
+comment4.target=java.lang.String\ getSubtype()
+comment4.text=\r\n\ Retorna\ el\ subtipo\ de\ esta\ taza.\r\n\ @return\ "dominant"\r\n
+comment5.params=items
+comment5.target=void\ insertDominantly(java.util.ArrayList)
+comment5.text=\r\n\ Inserta\ esta\ taza\ en\ la\ torre\ de\ forma\ dominante\:\r\n\ 1.\ Elimina\ todas\ las\ tazas\ (y\ sus\ tapas)\ con\ numero\ menor\ al\ suyo.\r\n\ 2.\ Se\ inserta\ en\ la\ posicion\ jerarquica\ correcta.\r\n\r\n\ @param\ items\ lista\ de\ elementos\ en\ la\ torre\r\n
+numComments=6

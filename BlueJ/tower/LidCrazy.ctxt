@@ -1,0 +1,16 @@
+#BlueJ class context
+comment0.target=LidCrazy
+comment0.text=\r\n\ LidCrazy\:\ tapa\ especial\ loca.\r\n\ Se\ coloca\ DEBAJO\ de\ su\ taza\ (no\ en\ la\ base).\r\n\ Se\ distingue\ visualmente\ por\ un\ tri\u00E1ngulo\ negro\ centrado.\r\n\ Hereda\ de\ Lid.\r\n\r\n\ @author\ Juan\ Diego\ Valderrama\ Gaviria\ y\ Jhonatan\ Madero\r\n\ @version\ 3.0\ (Corregido\:\ ahora\ va\ debajo\ de\ su\ taza)\r\n
+comment1.params=number\ color
+comment1.target=LidCrazy(int,\ java.lang.String)
+comment1.text=\r\n\ Constructor\ de\ LidCrazy.\r\n\ @param\ number\ numero\ de\ la\ tapa\r\n\ @param\ color\ \ color\ de\ la\ tapa\r\n
+comment2.params=towerCenterX\ towerBaseY\ yPositionCm
+comment2.target=void\ draw(int,\ int,\ int)
+comment2.text=\r\n\ Dibuja\ la\ tapa\ crazy\ con\ su\ tri\u00E1ngulo\ centrado.\r\n\ Se\ dibuja\ debajo\ de\ su\ taza,\ en\ la\ posici\u00F3n\ calculada.\r\n
+comment3.params=
+comment3.target=void\ erase()
+comment4.params=
+comment4.target=java.lang.String\ getSubtype()
+comment5.params=
+comment5.target=int\ getHeight()
+numComments=6

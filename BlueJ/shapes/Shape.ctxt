@@ -1,0 +1,34 @@
+#BlueJ class context
+comment0.target=Shape
+comment0.text=\r\n\ Clase\ abstracta\ base\ para\ todas\ las\ formas\ geom\u00E9tricas.\r\n\ Define\ la\ interfaz\ com\u00FAn\ que\ todas\ las\ formas\ deben\ implementar.\r\n\ \r\n\ @author\ Juan\ Diego\ Valderrama\ Gaviria\ y\ Jhonatan\ Madero\r\n\ @version\ 1.0\r\n
+comment1.params=
+comment1.target=Shape()
+comment1.text=\r\n\ Constructor\ de\ Shape\r\n
+comment10.params=
+comment10.target=boolean\ isVisible()
+comment10.text=\r\n\ Verifica\ si\ la\ forma\ es\ visible\r\n\ @return\ true\ si\ es\ visible,\ false\ si\ no\r\n
+comment2.params=g
+comment2.target=void\ draw(java.awt.Graphics2D)
+comment2.text=\r\n\ Dibuja\ la\ forma\ en\ un\ contexto\ gr\u00E1fico\ 2D\r\n\ @param\ g\ el\ contexto\ gr\u00E1fico\ donde\ dibujar\r\n
+comment3.params=
+comment3.target=void\ erase()
+comment3.text=\r\n\ Borra\ la\ forma\ de\ la\ pantalla\r\n
+comment4.params=newColor
+comment4.target=void\ changeColor(java.lang.String)
+comment4.text=\r\n\ Cambia\ el\ color\ de\ la\ forma\r\n\ @param\ newColor\ el\ nuevo\ color\r\n
+comment5.params=distance
+comment5.target=void\ moveHorizontal(int)
+comment5.text=\r\n\ Mueve\ la\ forma\ horizontalmente\r\n\ @param\ distance\ distancia\ a\ mover\ (positiva\ \=\ derecha,\ negativa\ \=\ izquierda)\r\n
+comment6.params=distance
+comment6.target=void\ moveVertical(int)
+comment6.text=\r\n\ Mueve\ la\ forma\ verticalmente\r\n\ @param\ distance\ distancia\ a\ mover\ (positiva\ \=\ arriba,\ negativa\ \=\ abajo)\r\n
+comment7.params=
+comment7.target=int\ getXPosition()
+comment7.text=\r\n\ Retorna\ la\ posici\u00F3n\ X\ de\ la\ forma\r\n\ @return\ posici\u00F3n\ X\r\n
+comment8.params=
+comment8.target=int\ getYPosition()
+comment8.text=\r\n\ Retorna\ la\ posici\u00F3n\ Y\ de\ la\ forma\r\n\ @return\ posici\u00F3n\ Y\r\n
+comment9.params=
+comment9.target=java.lang.String\ getColor()
+comment9.text=\r\n\ Retorna\ el\ color\ de\ la\ forma\r\n\ @return\ color\ actual\r\n
+numComments=11

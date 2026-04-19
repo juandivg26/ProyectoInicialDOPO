@@ -1,0 +1,10 @@
+#BlueJ class context
+comment0.target=LidNormal
+comment0.text=\r\n\ LidNormal\:\ tapa\ est\u00E1ndar\ de\ la\ torre.\r\n\ Tiene\ comportamiento\ normal\:\ tapa\ su\ taza\ correspondiente.\r\n\ Hereda\ de\ Lid.\r\n\ \r\n\ @author\ Juan\ Diego\ Valderrama\ Gaviria\ y\ Jhonatan\ Madero\r\n\ @version\ 1.0\r\n
+comment1.params=number\ color
+comment1.target=LidNormal(int,\ java.lang.String)
+comment1.text=\r\n\ Constructor\ de\ LidNormal\r\n\ @param\ number\ n\u00FAmero\ de\ la\ tapa\r\n\ @param\ color\ color\ de\ la\ tapa\r\n
+comment2.params=
+comment2.target=java.lang.String\ getSubtype()
+comment2.text=\r\n\ Retorna\ el\ subtipo\ de\ esta\ tapa\r\n\ @return\ "normal"\r\n
+numComments=3

@@ -1,0 +1,22 @@
+#BlueJ class context
+comment0.target=Lid
+comment0.text=\r\n\ Una\ tapa\ de\ la\ torre.\ Es\ un\ rectangulo\ solido.\r\n\ La\ altura\ de\ cualquier\ tapa\ es\ 1\ cm\ (excepto\ LidCrazy\ que\ es\ diferente).\r\n\ Hereda\ de\ StackItem.\r\n\ \r\n\ Clase\ ABSTRACTA\ que\ sirve\ como\ base\ para\ tipos\ espec\u00EDficos\ de\ tapas\:\r\n\ -\ LidNormal\:\ comportamiento\ est\u00E1ndar,\ altura\ \=\ 1\r\n\ -\ LidFearful\:\ no\ sale\ si\ est\u00E1\ tapando\ su\ taza\r\n\ -\ LidCrazy\:\ se\ pone\ de\ base,\ altura\ \=\ 0\r\n\ \r\n\ @author\ Juan\ Diego\ Valderrama\ Gaviria\ y\ Jhonatan\ Madero\r\n\ @version\ 3.0\r\n
+comment1.params=number\ color
+comment1.target=Lid(int,\ java.lang.String)
+comment1.text=\r\n\ Crea\ una\ tapa\ para\ la\ torre.\r\n\ La\ altura\ por\ defecto\ es\ 1\ cm\ (pero\ LidCrazy\ lo\ sobrescribe).\r\n\ @param\ number\ numero\ de\ la\ tapa\r\n\ @param\ color\ color\ de\ la\ tapa\r\n
+comment2.params=
+comment2.target=void\ createShape()
+comment2.text=\r\n\ Crea\ el\ rectangulo\ que\ forma\ la\ tapa.\r\n\ La\ tapa\ es\ un\ solo\ rectangulo\ solido.\r\n
+comment3.params=
+comment3.target=java.lang.String\ getType()
+comment3.text=\r\n\ Retorna\ el\ tipo\ de\ este\ elemento.\r\n\ @return\ "lid"\r\n
+comment4.params=
+comment4.target=java.lang.String\ getSubtype()
+comment4.text=\r\n\ Retorna\ el\ subtipo\ espec\u00EDfico\ de\ tapa\r\n\ Cada\ subclase\ implementa\ esto\r\n\ @return\ "normal",\ "fearful",\ "crazy",\ etc.\r\n
+comment5.params=towerCenterX\ towerBaseY\ yPositionCm
+comment5.target=void\ draw(int,\ int,\ int)
+comment5.text=\r\n\ Dibuja\ la\ tapa\ en\ la\ posicion\ indicada\ dentro\ de\ la\ torre.\r\n\ @param\ towerCenterX\ centro\ horizontal\ de\ la\ torre\ en\ pixeles\r\n\ @param\ towerBaseY\ posicion\ Y\ de\ la\ base\ de\ la\ torre\ en\ pixeles\r\n\ @param\ yPositionCm\ posicion\ Y\ del\ elemento\ en\ cm\ desde\ la\ base\r\n
+comment6.params=
+comment6.target=void\ erase()
+comment6.text=\r\n\ Hace\ invisible\ la\ tapa.\r\n\ Oculta\ el\ rectangulo\ de\ la\ tapa.\r\n
+numComments=7

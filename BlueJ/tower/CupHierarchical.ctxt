@@ -1,0 +1,22 @@
+#BlueJ class context
+comment0.target=CupHierarchical
+comment0.text=\r\n\ CupHierarchical\:\ taza\ especial\ jerarquica.\r\n\ Al\ entrar\ a\ la\ torre\ va\ desplazando\ todos\ los\ objetos\ de\ menor\ tama\u00F1o\ hacia\r\n\ arriba,\ insertandose\ en\ la\ posicion\ correcta\ segun\ su\ numero.\r\n\ Si\ logra\ llegar\ al\ fondo\ de\ la\ torre\ (queda\ en\ la\ posicion\ mas\ baja),\ ya\ no\r\n\ puede\ ser\ quitada.\r\n\ Se\ distingue\ visualmente\ por\ DOS\ c\u00EDrculos\ negros\ uno\ al\ lado\ del\ otro\ en\ la\ base.\r\n\ Hereda\ de\ Cup.\r\n\r\n\ @author\ Juan\ Diego\ Valderrama\ Gaviria\ y\ Jhonatan\ Madero\r\n\ @version\ 4.0\r\n
+comment1.params=number\ color
+comment1.target=CupHierarchical(int,\ java.lang.String)
+comment1.text=\r\n\ Constructor\ de\ CupHierarchical.\r\n\ @param\ number\ numero\ de\ la\ taza\r\n\ @param\ color\ \ color\ de\ la\ taza\r\n
+comment2.params=towerCenterX\ towerBaseY\ yPositionCm
+comment2.target=void\ draw(int,\ int,\ int)
+comment2.text=\r\n\ Dibuja\ la\ taza\ hierarchical\ con\ su\ franja\ al\ centro.\r\n
+comment3.params=
+comment3.target=void\ erase()
+comment3.text=\r\n\ Oculta\ la\ taza\ hierarchical\ y\ su\ franja.\r\n
+comment4.params=
+comment4.target=java.lang.String\ getSubtype()
+comment4.text=\r\n\ Retorna\ el\ subtipo\ de\ esta\ taza.\r\n\ @return\ "hierarchical"\r\n
+comment5.params=
+comment5.target=boolean\ hasReachedBottom()
+comment5.text=\r\n\ Indica\ si\ esta\ taza\ llego\ al\ fondo\ y\ por\ tanto\ no\ puede\ quitarse.\r\n\ @return\ true\ si\ llego\ al\ fondo\ de\ la\ torre\r\n
+comment6.params=items
+comment6.target=int\ insertHierarchically(java.util.ArrayList)
+comment6.text=\r\n\ Inserta\ esta\ taza\ en\ la\ posicion\ correcta\ dentro\ de\ la\ torre.\r\n\ La\ taza\ se\ coloca\ antes\ del\ primer\ elemento\ (cup\ o\ lid)\ que\ tenga\r\n\ un\ numero\ menor\ al\ suyo,\ desplazando\ todo\ lo\ que\ esta\ por\ encima.\r\n\ Si\ queda\ en\ la\ posicion\ 0\ (el\ fondo),\ se\ marca\ como\ inamovible.\r\n\r\n\ @param\ items\ lista\ de\ elementos\ en\ la\ torre\r\n\ @return\ el\ indice\ donde\ quedo\ insertada\r\n
+numComments=7

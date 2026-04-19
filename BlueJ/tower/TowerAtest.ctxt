@@ -1,0 +1,16 @@
+#BlueJ class context
+comment0.target=TowerAtest
+comment0.text=\r\n\ Pruebas\ de\ aceptacion\ para\ el\ Ciclo\ 4\ -\ Stacking\ Cups.\r\n\ Cada\ prueba\ se\ ejecuta\ en\ modo\ VISIBLE\ para\ que\ el\ usuario\ pueda\r\n\ ver\ el\ comportamiento\ en\ pantalla\ y\ confirmar\ si\ lo\ acepta.\r\n\ Incluye\ esperas\ entre\ operaciones\ para\ facilitar\ la\ observacion.\r\n\r\n\ @author\ Juan\ Diego\ Valderrama\ Gaviria\ y\ Jhonatan\ Madero\r\n\ @version\ 4.0\r\n
+comment1.params=ms
+comment1.target=void\ pause(int)
+comment1.text=\r\n\ Espera\ el\ tiempo\ indicado.\r\n\ @param\ ms\ milisegundos\ a\ esperar\r\n
+comment2.params=message
+comment2.target=boolean\ askUser(java.lang.String)
+comment2.text=\r\n\ Pregunta\ al\ usuario\ si\ acepta\ lo\ que\ ve\ en\ pantalla.\r\n\ @param\ message\ descripcion\ de\ lo\ que\ deberia\ verse\r\n\ @return\ true\ si\ el\ usuario\ acepta\r\n
+comment3.params=
+comment3.target=void\ acceptanceCupOpenerCleansAllLids()
+comment3.text=\r\n\ Escenario\:\ Una\ torre\ con\ varias\ tazas\ tapadas\ recibe\ una\ CupOpener.\r\n\ El\ usuario\ debe\ ver\ como\ al\ entrar\ la\ opener,\ todas\ las\ tapas\ desaparecen\r\n\ y\ solo\ quedan\ las\ tazas.\r\n\r\n\ Pasos\ visibles\:\r\n\ 1.\ Se\ construye\ torre\ con\ Cup5+Lid5,\ Cup3+Lid3,\ Cup2+Lid2\r\n\ 2.\ Entra\ CupOpener\ 4\ -\ las\ tres\ tapas\ desaparecen\r\n\ 3.\ La\ torre\ queda\ con\ 4\ tazas\ sin\ ninguna\ tapa\r\n
+comment4.params=
+comment4.target=void\ acceptanceMixedTypesWorkCorrectlyTogether()
+comment4.text=\r\n\ Escenario\:\ Se\ construye\ una\ torre\ usando\ los\ tres\ tipos\ nuevos\ de\ tapa\ y\ taza.\r\n\ El\ usuario\ debe\ ver\ como\ cada\ tipo\ se\ comporta\ de\ forma\ especial\ y\ diferente.\r\n\r\n\ Pasos\ visibles\:\r\n\ 1.\ Cup5\ entra\ normalmente\r\n\ 2.\ LidCrazy5\ se\ va\ a\ la\ BASE\ (no\ a\ la\ cima)\r\n\ 3.\ Cup3\ entra,\ LidFearful3\ la\ tapa\ y\ no\ se\ puede\ quitar\r\n\ 4.\ Cup1\ entra,\ CupDominant4\ elimina\ Cup1\ y\ Cup3\ (menores\ que\ 4)\r\n
+numComments=5
